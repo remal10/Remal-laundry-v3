@@ -10,24 +10,16 @@
 // PHASE 2.3 — DATE FILTER STATE
 // ═══════════════════════════════════════════════════════════════════
 
-// Phase 2.2 — Status filter ('all' | 'pending' | 'washing' | 'ready' | 'delivered')
 let currentStatusFilter = 'all';
-
-// Phase 2.3 — Quick date filter ('today' | '7d' | '30d' | '90d' | null = no filter)
 let currentDateFilter = null;
 
 // ═══════════════════════════════════════════════════════════════════
 // PHASE 5 — ROLE MANAGEMENT (Admin / Staff)
 // ═══════════════════════════════════════════════════════════════════
 
-/**
- * Check if current user has admin role
- * @returns {boolean}
- */
 function isAdmin() {
     try {
         if (typeof currentStaffUser === 'undefined' || !currentStaffUser) {
-            // Fallback: try reading from localStorage (page might be loading)
             const session = localStorage.getItem('remal_current_staff');
             if (session) {
                 const parsed = JSON.parse(session);
@@ -42,11 +34,6 @@ function isAdmin() {
     }
 }
 
-/**
- * Require admin role for an action. Shows an alert and returns false if not admin.
- * @param {string} actionName - Human-readable action name for the error message
- * @returns {boolean} true if admin, false otherwise
- */
 function requireAdmin(actionName = 'this action') {
     if (isAdmin()) return true;
     alert(`🚫 Access denied.\n\nOnly administrators can perform: ${actionName}.\n\nPlease contact your manager if you need this access.`);
@@ -54,11 +41,6 @@ function requireAdmin(actionName = 'this action') {
     return false;
 }
 
-/**
- * Apply role-based visibility to the UI.
- * Adds 'role-staff' class to body if user is NOT admin.
- * CSS rule hides all [data-admin-only="true"] elements when body has role-staff.
- */
 function applyRoleVisibility() {
     const body = document.body;
     if (!body) return;
@@ -69,45 +51,38 @@ function applyRoleVisibility() {
         return;
     }
 
-    // ═══ STAFF MODE — Masquage strict ET définitif ═══
     body.classList.add('role-staff');
     console.log('[Role] Staff mode — restricted UI (strict removal)');
 
-    // 1. Sections réservées admin : on les SUPPRIME du DOM
-  const ADMIN_SECTIONS = ['sectionLostfound', 'sectionPdfList', 'sectionMassEntry', 'sectionDashboard', 'sectionCheckout', 'sectionChat', 'sectionLinenControl'];
+    const ADMIN_SECTIONS = ['sectionLostfound', 'sectionPdfList', 'sectionMassEntry', 'sectionDashboard', 'sectionCheckout', 'sectionChat', 'sectionLinenControl'];
     ADMIN_SECTIONS.forEach(id => {
         const el = document.getElementById(id);
         if (el && el.parentNode) {
-            el.parentNode.removeChild(el);   // 🗑️ Supprimé pour de bon
+            el.parentNode.removeChild(el);
         }
     });
 
-    // 2. Boutons de nav admin : on les SUPPRIME du DOM
-  const ADMIN_NAV_BUTTONS = ['navBtnLostfound', 'navBtnPdfList', 'navBtnMassEntry', 'navBtnDashboard', 'navBtnChat', 'navBtnLinenControl'];
+    const ADMIN_NAV_BUTTONS = ['navBtnLostfound', 'navBtnPdfList', 'navBtnMassEntry', 'navBtnDashboard', 'navBtnChat', 'navBtnLinenControl'];
     ADMIN_NAV_BUTTONS.forEach(id => {
         const el = document.getElementById(id);
         if (el && el.parentNode) {
-            el.parentNode.removeChild(el);   // 🗑️ Supprimé pour de bon
+            el.parentNode.removeChild(el);
         }
     });
 
-    // 3. Tous les autres éléments marqués data-admin-only : on les SUPPRIME du DOM
     document.querySelectorAll('[data-admin-only="true"]').forEach(el => {
         if (el.parentNode) {
-            el.parentNode.removeChild(el);   // 🗑️ Supprimé pour de bon
+            el.parentNode.removeChild(el);
         }
     });
 }
+
 // ═══════════════════════════════════════════════════════════════════
 // PHASE 2.4 — ROOM AUTOCOMPLETE IN SEARCH
 // ═══════════════════════════════════════════════════════════════════
 
 let searchRoomDebounceTimer = null;
 
-/**
- * Extract unique room numbers from cachedSlips, sorted ascending
- * @returns {string[]}
- */
 function getUniqueRoomsFromArchives() {
     if (typeof cachedSlips === 'undefined' || !Array.isArray(cachedSlips)) return [];
     const rooms = new Set();
@@ -118,10 +93,6 @@ function getUniqueRoomsFromArchives() {
     return Array.from(rooms).sort((a, b) => parseInt(a) - parseInt(b));
 }
 
-/**
- * Handle input/focus on #searchRoom — debounced autocomplete
- * @param {Event} event
- */
 function onSearchRoomInput(event) {
     if (searchRoomDebounceTimer) clearTimeout(searchRoomDebounceTimer);
     searchRoomDebounceTimer = setTimeout(() => {
@@ -129,10 +100,6 @@ function onSearchRoomInput(event) {
     }, 200);
 }
 
-/**
- * Render autocomplete dropdown for #searchRoom
- * @param {string} query
- */
 function renderSearchRoomDropdown(query) {
     const dropdown = document.getElementById('searchRoomDropdown');
     if (!dropdown) return;
@@ -142,11 +109,9 @@ function renderSearchRoomDropdown(query) {
 
     const q = String(query || '').trim().toLowerCase();
 
-    // If query looks like a guest name or SPA serial (contains letters or #), don't show room suggestions
     if (q && !/^\d+$/.test(q)) {
         dropdown.classList.add('hidden');
         dropdown.innerHTML = '';
-        // Still trigger the standard filter
         if (typeof afficherListeBordereauxLocal === 'function') {
             afficherListeBordereauxLocal();
         }
@@ -158,7 +123,6 @@ function renderSearchRoomDropdown(query) {
         ? allRooms.filter(r => r.startsWith(q))
         : allRooms;
 
-    // Limit to 12 results for cleanliness
     const limited = matches.slice(0, 12);
 
     if (limited.length === 0) {
@@ -182,10 +146,6 @@ function renderSearchRoomDropdown(query) {
     dropdown.classList.remove('hidden');
 }
 
-/**
- * Apply a room suggestion: fill input + hide dropdown + re-run filter
- * @param {string} room
- */
 function selectSearchRoom(room) {
     const input = document.getElementById('searchRoom');
     if (input) input.value = room;
@@ -203,9 +163,6 @@ function selectSearchRoom(room) {
     console.log('[SearchRoom] Selected:', room);
 }
 
-/**
- * Close dropdown when clicking outside
- */
 document.addEventListener('click', (e) => {
     const dropdown = document.getElementById('searchRoomDropdown');
     const input = document.getElementById('searchRoom');
@@ -215,9 +172,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-/**
- * Close dropdown on Escape key
- */
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         const dropdown = document.getElementById('searchRoomDropdown');
@@ -357,7 +311,6 @@ function renderMassPreviewTable() {
             ? `<span class="badge-chargeable">Chargeable</span>`
             : `<span class="badge-green">Included (${item.quotaText})</span>`;
 
-        // Cellules éditables : data-field + data-room
         const editableAttrs = (field) =>
             `contenteditable="true" data-field="${field}" data-room="${room}" ` +
             `onblur="sauvegarderChampPMS(this)" ` +
@@ -395,19 +348,15 @@ async function sauvegarderChampPMS(cell) {
 
     if (!room || !field) return;
 
-    // Valeur actuelle en mémoire
     const current = pmsDatabase[room];
     if (!current) return;
 
     if (String(current[field] || '') === newValue) {
-        // Rien à sauvegarder
         return;
     }
 
-    // Mise à jour locale
     pmsDatabase[room][field] = newValue;
 
-    // Cas spécial : si on édite quotaText → recalculer isChargeable
     if (field === 'quotaText') {
         const lower = newValue.toLowerCase();
         pmsDatabase[room].isChargeable = lower.includes('chargeable') || (!lower.includes('laundry') && !lower.includes('pcs'));
@@ -415,7 +364,6 @@ async function sauvegarderChampPMS(cell) {
 
     sauvegarderPmsLocalStorage();
 
-    // Sync Supabase
     if (typeof supabaseClient !== 'undefined' && supabaseClient) {
         const payload = {};
         payload[field] = newValue;
@@ -431,7 +379,6 @@ async function sauvegarderChampPMS(cell) {
 
             if (error) throw error;
 
-            // Feedback visuel
             cell.classList.add('bg-emerald-900/50');
             setTimeout(() => cell.classList.remove('bg-emerald-900/50'), 800);
 
@@ -1227,7 +1174,6 @@ function deleteLFItem(id) {
 function renderManagementDashboard() {
     chargerDonneesLocalStorage();
 
-    // ═══ 1. Filtrer selon la période ═══
     const now = new Date();
     let startDate = new Date();
 
@@ -1246,12 +1192,10 @@ function renderManagementDashboard() {
             break;
     }
 
-    // Période précédente (pour les deltas)
     const periodLength = now - startDate;
     const prevStart = new Date(startDate.getTime() - periodLength);
     const prevEnd = startDate;
 
-    // ═══ 2. Filtrer les slips ═══
     const currentSlips = cachedSlips.filter(s => {
         if (!s.created_at) return false;
         const d = new Date(s.created_at);
@@ -1264,7 +1208,6 @@ function renderManagementDashboard() {
         return d >= prevStart && d < prevEnd;
     });
 
-    // ═══ 3. Calculer les métriques ═══
     function computeMetrics(slips) {
         let revenue = 0, orders = slips.length, garments = 0;
         let laundry = 0, spa = 0;
@@ -1306,24 +1249,23 @@ function renderManagementDashboard() {
             }
         });
 
-            return { 
-        revenue, orders, garments, laundry, spa, 
-        statusCounts, revenueByDate, roomRevenue, agencyRevenue, 
-        roomGuests, agencyOrders,
-        slips: slips
-    };
-}
+        return { 
+            revenue, orders, garments, laundry, spa, 
+            statusCounts, revenueByDate, roomRevenue, agencyRevenue, 
+            roomGuests, agencyOrders,
+            slips: slips
+        };
+    }
+
     const m = computeMetrics(currentSlips);
     const p = computeMetrics(prevSlips);
 
-    // ═══ 4. Animer les KPI ═══
     animateNumber(document.getElementById('kpiRevenue'), m.revenue, 'AED');
     animateNumber(document.getElementById('kpiOrders'), m.orders, '');
     animateNumber(document.getElementById('kpiGarments'), m.garments, 'pcs');
     animateNumber(document.getElementById('kpiLaundry'), m.laundry, 'AED');
     animateNumber(document.getElementById('kpiSpa'), m.spa, 'AED');
 
-    // ═══ 5. Deltas ═══
     function updateDelta(elId, curr, prev) {
         const el = document.getElementById(elId);
         if (!el) return;
@@ -1342,9 +1284,7 @@ function renderManagementDashboard() {
     updateDelta('kpiLaundryDelta', m.laundry, p.laundry);
     updateDelta('kpiSpaDelta', m.spa, p.spa);
 
-    // ═══ 6. Charts ═══
     requestAnimationFrame(() => {
-        // Pie : Laundry vs SPA
         const pieEl = document.getElementById('spaVsLaundryChart');
         if (pieEl) {
             if (window._spaVsLaundryChart) window._spaVsLaundryChart.destroy();
@@ -1368,7 +1308,6 @@ function renderManagementDashboard() {
             });
         }
 
-        // Doughnut : statuts
         const doughnutEl = document.getElementById('statusDoughnutChart');
         if (doughnutEl) {
             if (window._statusDoughnutChart) window._statusDoughnutChart.destroy();
@@ -1397,7 +1336,6 @@ function renderManagementDashboard() {
             });
         }
 
-        // Bar : revenue par date
         const barEl = document.getElementById('revenueBarChart');
         if (barEl) {
             const dates = Object.keys(m.revenueByDate).sort();
@@ -1435,7 +1373,6 @@ function renderManagementDashboard() {
         }
     });
 
-    // ═══ 7. Top 5 Rooms ═══
     const topRooms = Object.entries(m.roomRevenue)
         .map(([room, value]) => ({ name: `Room ${room}`, value, sub: m.roomGuests[room] || '' }))
         .sort((a, b) => b.value - a.value)
@@ -1443,23 +1380,21 @@ function renderManagementDashboard() {
 
     renderTopList('topRoomsList', topRooms, true);
 
-    // ═══ 8. Top 5 Agencies ═══
     const topAgencies = Object.entries(m.agencyRevenue)
         .map(([agency, value]) => ({ name: agency, value, sub: `${m.agencyOrders[agency]} order${m.agencyOrders[agency] > 1 ? 's' : ''}` }))
         .sort((a, b) => b.value - a.value)
         .slice(0, 5);
 
     renderTopList('topAgenciesList', topAgencies, true);
-    // ═══ 9. Performance par Agent ═══
     if (typeof renderAgentPerformance === 'function') {
         renderAgentPerformance(m && m.slips ? m.slips : []);
     }
 
-    // ═══ 10. Processing Times ═══
     if (typeof renderProcessingTimes === 'function') {
         renderProcessingTimes(m && m.slips ? m.slips : []);
     }
 }
+
 // ═══════════════════════════════════════════════════════════════════
 // SPA
 // ═══════════════════════════════════════════════════════════════════
@@ -1467,7 +1402,6 @@ async function exportSpaToPDF() {
     const isValid = await validateAndSaveSpaReceipt();
     if (!isValid) return;
 
-    // ═══ 1. Récupérer les valeurs du formulaire SPA ═══
     const serialNo = document.getElementById('spa-serial-no').value.trim() || '---';
     const givenBy = document.getElementById('spa-given-by').value.trim() || '---';
     const collectedBy = document.getElementById('spa-collected-by').value.trim() || '---';
@@ -1481,7 +1415,6 @@ async function exportSpaToPDF() {
         ? `staff ( ${currentStaffUser.name} )`
         : 'staff';
 
-    // ═══ 2. Remplir la zone PDF SPA dédiée ═══
     document.getElementById('spaPdfDate').innerText = currentDate;
     document.getElementById('spaPdfGivenBy').innerText = givenBy;
     document.getElementById('spaPdfSerial').innerText = serialNo;
@@ -1492,11 +1425,9 @@ async function exportSpaToPDF() {
     document.getElementById('spaPdfCollectionDate').innerText = colDate ? `${colDate} ${colTime}` : '---';
     document.getElementById('spaPdfDeliveryDate').innerText = delDate ? `${delDate} ${delTime}` : '---';
 
-    // Receipt ID (généré)
     const rid = 'REC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     document.getElementById('spaPdfReceiptId').innerText = '#' + rid;
 
-    // ═══ 3. Construire le tableau des items ═══
     const spaRows = document.querySelectorAll('#spa-laundry-section tbody tr');
     const tableBody = document.getElementById('spaPdfTableBody');
     tableBody.innerHTML = '';
@@ -1532,29 +1463,25 @@ async function exportSpaToPDF() {
 
     document.getElementById('spaPdfGrandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
 
-  // ═══ 4. Afficher la zone hors écran pour la capture ═══
-const spaPdfArea = document.getElementById('spaPdfExportArea');
+    const spaPdfArea = document.getElementById('spaPdfExportArea');
+    const originalParent = spaPdfArea.parentNode;
+    const originalNextSibling = spaPdfArea.nextSibling;
 
-// 🎯 FIX : Déplacer la zone directement dans <body>
-// (évite le problème des parents cachés)
-const originalParent = spaPdfArea.parentNode;
-const originalNextSibling = spaPdfArea.nextSibling;
+    document.body.appendChild(spaPdfArea);
 
-document.body.appendChild(spaPdfArea);
+    spaPdfArea.style.display = 'block';
+    spaPdfArea.style.position = 'fixed';
+    spaPdfArea.style.left = '0';
+    spaPdfArea.style.top = '0';
+    spaPdfArea.style.opacity = '1';
+    spaPdfArea.style.visibility = 'visible';
+    spaPdfArea.style.width = '700px';
+    spaPdfArea.style.transform = 'translateX(0)';
+    spaPdfArea.style.background = '#ffffff';
+    spaPdfArea.style.zIndex = '99999';
 
-spaPdfArea.style.display = 'block';
-spaPdfArea.style.position = 'fixed';
-spaPdfArea.style.left = '0';
-spaPdfArea.style.top = '0';
-spaPdfArea.style.opacity = '1';
-spaPdfArea.style.visibility = 'visible';
-spaPdfArea.style.width = '700px';
-spaPdfArea.style.transform = 'translateX(0)';
-spaPdfArea.style.background = '#ffffff';
-spaPdfArea.style.zIndex = '99999';
+    await new Promise(r => setTimeout(r, 500));
 
-await new Promise(r => setTimeout(r, 500));
-    // ═══ 5. Générer le PDF ═══
     const dateClean = colDate || new Date().toISOString().split('T')[0];
     const filename = `REMAL_${dateClean}_SPA-${serialNo}.pdf`;
 
@@ -1582,23 +1509,23 @@ await new Promise(r => setTimeout(r, 500));
     } catch (e) {
         console.error("Erreur PDF SPA:", e);
         alert("⚠️ Error generating SPA PDF.");
-} finally {
-    // 🎯 FIX : Restaurer la zone à sa place originale
-    spaPdfArea.style.display = 'none';
-    spaPdfArea.style.position = '';
-    spaPdfArea.style.left = '';
-    spaPdfArea.style.top = '';
-    spaPdfArea.style.width = '';
-    spaPdfArea.style.maxWidth = '';
-    spaPdfArea.style.zIndex = '';
-    
-    if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
-        originalParent.insertBefore(spaPdfArea, originalNextSibling);
-    } else if (originalParent) {
-        originalParent.appendChild(spaPdfArea);
+    } finally {
+        spaPdfArea.style.display = 'none';
+        spaPdfArea.style.position = '';
+        spaPdfArea.style.left = '';
+        spaPdfArea.style.top = '';
+        spaPdfArea.style.width = '';
+        spaPdfArea.style.maxWidth = '';
+        spaPdfArea.style.zIndex = '';
+        
+        if (originalNextSibling && originalNextSibling.parentNode === originalParent) {
+            originalParent.insertBefore(spaPdfArea, originalNextSibling);
+        } else if (originalParent) {
+            originalParent.appendChild(spaPdfArea);
+        }
     }
 }
-}
+
 // ═══════════════════════════════════════════════════════════════════
 // SESSION STAFF
 // ═══════════════════════════════════════════════════════════════════
@@ -1612,7 +1539,7 @@ function checkStaffSession() {
             console.log("✅ Staff session restored:", currentStaffUser);
             if (loginModal) loginModal.classList.add('hidden');
             updateStaffUIIndicator();
-            applyRoleVisibility();  // Phase 5
+            applyRoleVisibility();
             return;
         } catch (e) {
             console.error("❌ Error parsing saved staff:", e);
@@ -1631,9 +1558,6 @@ async function verifyStaffPin() {
     const pin = pinInput ? pinInput.value.trim() : '';
 
     if (!pin) return;
-    
-    // 🔍 DEBUG : On affiche le PIN tapé
-    console.log("🔍 [Login Debug] PIN tapé :", pin);
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
         if (pin === '1234') {
@@ -1646,18 +1570,14 @@ async function verifyStaffPin() {
         }
     }
 
-   try {
-    const { data, error } = await supabaseClient
-        .from('laundry_staff')
-        .select('*')
-        .eq('pin_code', pin)
-        // .eq('is_active', true) // (déjà commenté normalement)
-        .maybeSingle();
-        
-    // 🔍 DEBUG : On affiche la réponse exacte de Supabase
-    console.log("🔍 [Login Debug] Réponse Supabase :", { data, error });
+    try {
+        const { data, error } = await supabaseClient
+            .from('laundry_staff')
+            .select('*')
+            .eq('pin_code', pin)
+            .eq('is_active', true)
+            .maybeSingle();
 
-    if (error || !data) {
         if (error || !data) {
             if(errorMsg) errorMsg.classList.remove('hidden');
             if(pinInput) pinInput.value = '';
@@ -1685,7 +1605,7 @@ function saveAndUnlockSession() {
     if (loginModal) loginModal.classList.add('hidden');
     
     updateStaffUIIndicator();
-    applyRoleVisibility();  // Phase 5
+    applyRoleVisibility();
     console.log(`✅ Session unlocked by: ${currentStaffUser.name} (${currentStaffUser.role})`);
 }
 
@@ -1694,7 +1614,6 @@ function updateStaffUIIndicator() {
     const headerIndicator = document.getElementById('staffIndicatorHeader');
     const headerName = document.getElementById('staffNameHeader');
 
-    // ✨ SPRINT 1 : badge rôle premium (nouveau header)
     const roleName = document.getElementById('roleBadgeName');
     const roleIcon = document.getElementById('roleBadgeIcon');
     const roleRole = document.getElementById('roleBadgeRole');
@@ -1704,7 +1623,6 @@ function updateStaffUIIndicator() {
         if (headerIndicator) headerIndicator.classList.remove('hidden');
         if (headerName) headerName.innerText = currentStaffUser.name;
 
-        // ✨ Mise à jour du badge rôle premium
         if (roleName) roleName.textContent = currentStaffUser.name || 'Staff';
         
         const isAdminUser = String(currentStaffUser.role || '').toLowerCase() === 'admin';
@@ -1735,6 +1653,7 @@ function confirmLogout() {
         logoutStaff();
     }
 }
+
 // ═══════════════════════════════════════════════════════════════════
 // 🧘 MODALE DÉTAILS SPA — fonctions dédiées
 // ═══════════════════════════════════════════════════════════════════
@@ -1752,7 +1671,6 @@ async function ouvrirSpaDetailModal(recordId) {
         return;
     }
 
-    // ═══ Remplir les infos ═══
     const dateFormatted = entry.created_at 
         ? new Date(entry.created_at).toLocaleDateString('en-GB') 
         : '---';
@@ -1770,7 +1688,6 @@ async function ouvrirSpaDetailModal(recordId) {
     document.getElementById('spaDetailDeliveryDate').innerText = 
         (entry.options?.delivery_date || '---') + ' ' + (entry.options?.delivery_time || '');
 
-    // ═══ Tableau des items ═══
     const tableBody = document.getElementById('spaDetailTableBody');
     tableBody.innerHTML = '';
     let grandTotal = 0;
@@ -1797,7 +1714,6 @@ async function ouvrirSpaDetailModal(recordId) {
 
     document.getElementById('spaDetailGrandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
 
-    // ═══ Ouvrir la modale ═══
     document.getElementById('spaDetailModal').classList.remove('hidden');
     if (navigator.vibrate) navigator.vibrate(15);
 
@@ -1813,7 +1729,6 @@ function fermerSpaDetailModal() {
 function modifierSpaRecord() {
     if (!currentSpaRecordId) return;
     fermerSpaDetailModal();
-    // Charger dans le formulaire SPA
     chargerDonneesLocalStorage();
     const entry = cachedSlips.find(s => String(s.id) === String(currentSpaRecordId));
     if (entry) {
@@ -1830,7 +1745,6 @@ async function dupliquerSpaRecord() {
     if (!currentSpaRecordId) return;
     fermerSpaDetailModal();
     switchMainSection('spa');
-    // Reset
     document.getElementById('editingSpaId').value = '';
     document.getElementById('spa-serial-no').value = '';
     document.getElementById('spa-given-by').value = '';
@@ -1863,7 +1777,6 @@ async function supprimerSpaRecord() {
     setTimeout(() => { isLocalUpdating = false; }, 800);
 }
 
-// Exposer
 window.ouvrirSpaDetailModal = ouvrirSpaDetailModal;
 window.fermerSpaDetailModal = fermerSpaDetailModal;
 window.modifierSpaRecord = modifierSpaRecord;
@@ -1871,14 +1784,9 @@ window.dupliquerSpaRecord = dupliquerSpaRecord;
 window.supprimerSpaRecord = supprimerSpaRecord;
 
 console.log('✅ [SPA Modal] Fonctions chargées');
-// ═══════════════════════════════════════════════════════════════════
-// 📄 EXPORT SPA PDF — Simple et direct
-// ═══════════════════════════════════════════════════════════════════
-async function printSpaDetail() {
-    // ✅ Reprend la méthode d'exportSpaToPDF (validée visuellement)
 
+async function printSpaDetail() {
     if (!currentSpaRecordId) {
-        // Fallback : essayer de récupérer le serial depuis la modale
         const fallbackSerial = document.getElementById('spaDetailSerial')?.innerText?.trim();
         if (!fallbackSerial) {
             alert('⚠️ Aucun SPA sélectionné.');
@@ -1893,7 +1801,6 @@ async function printSpaDetail() {
         return;
     }
 
-    // ═══ 1. Remplir la zone PDF SPA dédiée ═══
     const dateFormatted = entry.created_at
         ? new Date(entry.created_at).toLocaleDateString('en-GB')
         : new Date().toLocaleDateString('en-GB');
@@ -1920,7 +1827,6 @@ async function printSpaDetail() {
     document.getElementById('spaPdfCollectionDate').innerText = colDate ? `${colDate} ${colTime}` : '---';
     document.getElementById('spaPdfDeliveryDate').innerText = delDate ? `${delDate} ${delTime}` : '---';
 
-    // ═══ 2. Tableau items ═══
     const tableBody = document.getElementById('spaPdfTableBody');
     tableBody.innerHTML = '';
     let grandTotal = 0;
@@ -1948,51 +1854,45 @@ async function printSpaDetail() {
 
     document.getElementById('spaPdfGrandTotal').innerText = `${grandTotal.toFixed(2)} AED`;
 
-// ═══ 3. Afficher la zone (même technique que exportSpaToPDF) ═══
-const spaPdfArea = document.getElementById('spaPdfExportArea');
-const originalParent = spaPdfArea.parentNode;
-const originalNextSibling = spaPdfArea.nextSibling;
+    const spaPdfArea = document.getElementById('spaPdfExportArea');
+    const originalParent = spaPdfArea.parentNode;
+    const originalNextSibling = spaPdfArea.nextSibling;
 
-document.body.appendChild(spaPdfArea);
+    document.body.appendChild(spaPdfArea);
 
-// ⚠️ NE PAS forcer de width fixe — html2canvas doit mesurer lui-même
-//    Sinon la capture est tronquée/décalée
-spaPdfArea.style.display = 'block';
-spaPdfArea.style.position = 'fixed';
-spaPdfArea.style.left = '0';
-spaPdfArea.style.top = '0';
-spaPdfArea.style.opacity = '1';
-spaPdfArea.style.visibility = 'visible';
-spaPdfArea.style.width = 'auto';       // ✅ largeur naturelle
-spaPdfArea.style.maxWidth = '750px';   // ✅ plafond raisonnable
-spaPdfArea.style.transform = 'translateX(0)';
-spaPdfArea.style.background = '#ffffff';
-spaPdfArea.style.zIndex = '99999';
+    spaPdfArea.style.display = 'block';
+    spaPdfArea.style.position = 'fixed';
+    spaPdfArea.style.left = '0';
+    spaPdfArea.style.top = '0';
+    spaPdfArea.style.opacity = '1';
+    spaPdfArea.style.visibility = 'visible';
+    spaPdfArea.style.width = 'auto';
+    spaPdfArea.style.maxWidth = '750px';
+    spaPdfArea.style.transform = 'translateX(0)';
+    spaPdfArea.style.background = '#ffffff';
+    spaPdfArea.style.zIndex = '99999';
 
-// ⏱️ Attente critique pour que le layout + images se chargent
-await new Promise(r => setTimeout(r, 500));
+    await new Promise(r => setTimeout(r, 500));
 
-// ═══ 4. Générer le PDF ═══
-const dateClean = entry.created_at ? entry.created_at.split('T')[0] : new Date().toISOString().split('T')[0];
-const filename = `REMAL_${dateClean}_SPA-${serialNo}.pdf`;
+    const dateClean = entry.created_at ? entry.created_at.split('T')[0] : new Date().toISOString().split('T')[0];
+    const filename = `REMAL_${dateClean}_SPA-${serialNo}.pdf`;
 
-const opt = {
-    margin:       [10, 12, 12, 12],
-    filename:     filename,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        scrollX: 0,
-        scrollY: 0
-        // ✅ windowWidth / windowHeight SUPPRIMÉS → html2canvas mesure seul
-    },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-};
+    const opt = {
+        margin:       [10, 12, 12, 12],
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
 
     try {
         await html2pdf().set(opt).from(spaPdfArea).save();
@@ -2001,7 +1901,6 @@ const opt = {
         console.error("Erreur PDF SPA:", e);
         alert("⚠️ Error generating SPA PDF.");
     } finally {
-        // ═══ 5. Restaurer la zone ═══
         spaPdfArea.style.display = 'none';
         spaPdfArea.style.position = '';
         spaPdfArea.style.left = '';
@@ -2021,13 +1920,7 @@ const opt = {
 }
 window.printSpaDetail = printSpaDetail;
 console.log('✅ [SPA] printSpaDetail chargée');
-// ═══════════════════════════════════════════════════════════════════
-// 📈 DASHBOARD PREMIUM — Helpers
-// ═══════════════════════════════════════════════════════════════════
 
-/**
- * Animate a number from 0 to target with easing
- */
 function animateNumber(el, target, suffix = '', duration = 1500) {
     if (!el) return;
     const start = 0;
@@ -2051,9 +1944,6 @@ function animateNumber(el, target, suffix = '', duration = 1500) {
     requestAnimationFrame(update);
 }
 
-/**
- * Render a Top 5 list with animated bars
- */
 function renderTopList(containerId, items, isCurrency = true) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -2078,12 +1968,8 @@ function renderTopList(containerId, items, isCurrency = true) {
     `).join('');
 }
 
-// État global pour la période du dashboard
 let currentDashboardPeriod = 'today';
 
-/**
- * Switch dashboard period and re-render
- */
 function switchDashboardPeriod(period) {
     currentDashboardPeriod = period;
 
@@ -2097,10 +1983,6 @@ function switchDashboardPeriod(period) {
 
     renderManagementDashboard();
 }
-/* ═══════════════════════════════════════════════════════════════════
-   👥 SUPERVISEUR — Performance par Agent
-   Analyse les commandes par created_by et calcule les stats
-   ═══════════════════════════════════════════════════════════════════ */
 
 function renderAgentPerformance(slips) {
     const container = document.getElementById('agentsPerformanceList');
@@ -2108,19 +1990,16 @@ function renderAgentPerformance(slips) {
 
     if (!container) return;
 
-    // Si slips non fourni, on prend tous les cachedSlips
     if (!slips || !Array.isArray(slips)) {
         chargerDonneesLocalStorage();
         slips = cachedSlips;
     }
 
-    // ═══ 1. Grouper les commandes par agent ═══
     const agentsMap = {};
 
     slips.forEach(slip => {
         const createdBy = slip.created_by || 'pending';
 
-        // Ignorer les commandes "pending" ou "guest app"
         const isGuestOrder = createdBy === 'pending' 
             || createdBy === 'Guest App' 
             || createdBy === 'guest app'
@@ -2130,7 +2009,6 @@ function renderAgentPerformance(slips) {
 
         if (isGuestOrder) return;
 
-        // Extraire le nom propre (enlever "staff ( ... )")
         let agentName = createdBy;
         const match = createdBy.match(/staff\s*\(\s*(.+?)\s*\)/i);
         if (match) agentName = match[1].trim();
@@ -2157,19 +2035,16 @@ function renderAgentPerformance(slips) {
         if (slip.is_spa) agent.spaOrders += 1;
         else agent.laundryOrders += 1;
 
-        // Dernière activité
         const created = slip.created_at ? new Date(slip.created_at) : null;
         if (created && (!agent.lastActivity || created > agent.lastActivity)) {
             agent.lastActivity = created;
         }
 
-        // Détecter si admin (via le rôle stocké sur le slip ou par défaut)
         if (slip.created_by_role) {
             agent.isAdmin = String(slip.created_by_role).toLowerCase() === 'admin';
         }
     });
 
-    // ═══ 2. Convertir en tableau + trier par CA desc ═══
     const agents = Object.values(agentsMap).sort((a, b) => b.revenue - a.revenue);
 
     if (agents.length === 0) {
@@ -2185,17 +2060,14 @@ function renderAgentPerformance(slips) {
         badge.textContent = `${agents.length} agent${agents.length > 1 ? 's' : ''}`;
     }
 
-    // ═══ 3. Calculer le max pour les barres ═══
     const maxRevenue = Math.max(...agents.map(a => a.revenue), 1);
 
-    // ═══ 4. Générer le HTML ═══
     const now = new Date();
 
     container.innerHTML = agents.map((agent, index) => {
         const isChampion = index === 0;
         const initial = agent.name.charAt(0).toUpperCase();
 
-        // Format dernière activité
         let lastActivityText = '---';
         if (agent.lastActivity) {
             const diffMs = now - agent.lastActivity;
@@ -2209,10 +2081,8 @@ function renderAgentPerformance(slips) {
             else lastActivityText = `Il y a ${diffDay} j`;
         }
 
-        // Barre de performance
         const barWidth = (agent.revenue / maxRevenue) * 100;
 
-        // Badge de rôle
         const roleBadge = agent.isAdmin 
             ? '<span class="agent-role-badge admin">👑 Admin</span>'
             : '<span class="agent-role-badge staff">👤 Staff</span>';
@@ -2257,10 +2127,6 @@ function renderAgentPerformance(slips) {
 
 window.renderAgentPerformance = renderAgentPerformance;
 console.log('✅ [Superviseur] Performance par Agent chargée');
-/* ═══════════════════════════════════════════════════════════════════
-   📄 SUPERVISOR — Daily Report PDF (English)
-   Generates a premium PDF report for the GM
-   ═══════════════════════════════════════════════════════════════════ */
 
 async function genererRapportJournalier() {
     const btn = document.querySelector('.dashboard-report-btn');
@@ -2270,7 +2136,6 @@ async function genererRapportJournalier() {
     }
 
     try {
-        // ═══ 1. Target date = yesterday ═══
         const now = new Date();
         const targetDate = new Date(now);
         targetDate.setDate(targetDate.getDate() - 1);
@@ -2279,7 +2144,6 @@ async function genererRapportJournalier() {
         const nextDay = new Date(targetDate);
         nextDay.setDate(nextDay.getDate() + 1);
 
-        // ═══ 2. Filter slips of the day ═══
         chargerDonneesLocalStorage();
 
         let daySlips = cachedSlips.filter(s => {
@@ -2306,7 +2170,6 @@ async function genererRapportJournalier() {
             });
         }
 
-        // ═══ 3. Compute metrics ═══
         let totalRevenue = 0;
         let totalPieces = 0;
         let laundryRevenue = 0;
@@ -2373,7 +2236,6 @@ async function genererRapportJournalier() {
 
         const agentsList = Object.values(agentsMap).sort((a, b) => b.revenue - a.revenue);
 
-        // ═══ 4. Build HTML ═══
         const html = buildRapportHTML({
             date: targetDate,
             totalRevenue,
@@ -2388,7 +2250,6 @@ async function genererRapportJournalier() {
             generatedAt: new Date()
         });
 
-        // ═══ 5. Create container + generate PDF ═══
         let container = document.getElementById('reportExportContainer');
         if (!container) {
             container = document.createElement('div');
@@ -2643,10 +2504,6 @@ function buildRapportHTML(data) {
 
 window.genererRapportJournalier = genererRapportJournalier;
 console.log('✅ [Report] Daily report generator loaded');
-/* ═══════════════════════════════════════════════════════════════════
-   ⏱️ SUPERVISOR — Processing Times Analytics
-   Computes average processing time per order and per agent
-   ═══════════════════════════════════════════════════════════════════ */
 
 async function renderProcessingTimes(slips) {
     if (!container_exists('timesKpiGrid')) return;
@@ -2662,9 +2519,8 @@ async function renderProcessingTimes(slips) {
         slips = [];
     }
 
-    // ═══ 1. Fetch status_history for these requests ═══
     const requestIds = slips
-        .filter(s => String(s.id).length === 36)  // valid UUIDs
+        .filter(s => String(s.id).length === 36)
         .map(s => String(s.id));
 
     if (requestIds.length === 0) {
@@ -2698,33 +2554,27 @@ async function renderProcessingTimes(slips) {
         }
     }
 
-    // ═══ 2. Group history by request_id ═══
     const historyByRequest = {};
     historyData.forEach(h => {
         if (!historyByRequest[h.request_id]) historyByRequest[h.request_id] = [];
         historyByRequest[h.request_id].push(h);
     });
 
-    // ═══ 3. Compute processing times ═══
-    const orderTimes = [];      // { requestId, agent, durationMs, order }
-    const agentTimes = {};      // { agentName: [durations] }
+    const orderTimes = [];
+    const agentTimes = {};
 
     slips.forEach(slip => {
         const requestId = String(slip.id);
         const history = historyByRequest[requestId] || [];
 
-        // Need at least 2 events to compute duration
         if (history.length < 2) return;
 
-        // First event = start, last event = end
         const start = new Date(history[0].created_at);
         const end = new Date(history[history.length - 1].created_at);
         const durationMs = end - start;
 
-        // Skip if negative or absurd (>7 days)
         if (durationMs < 0 || durationMs > 7 * 24 * 60 * 60 * 1000) return;
 
-        // Agent (from created_by)
         const createdBy = slip.created_by || 'pending';
         const isGuestOrder = ['pending', 'Guest App', 'guest app', 'Guest', 'Guest Portal', 'Staff Laundry OS'].includes(createdBy);
 
@@ -2748,7 +2598,6 @@ async function renderProcessingTimes(slips) {
         }
     });
 
-    // ═══ 4. If no data, show message ═══
     if (orderTimes.length === 0) {
         if (sampleBadge) sampleBadge.textContent = '0 orders';
         if (kpiAvgTotal) kpiAvgTotal.textContent = '--';
@@ -2763,7 +2612,6 @@ async function renderProcessingTimes(slips) {
         return;
     }
 
-    // ═══ 5. Compute global stats ═══
     const durations = orderTimes.map(o => o.durationMs);
     const avgMs = durations.reduce((a, b) => a + b, 0) / durations.length;
     const minMs = Math.min(...durations);
@@ -2777,7 +2625,6 @@ async function renderProcessingTimes(slips) {
     if (kpiFastest) kpiFastest.textContent = formatDuration(minMs);
     if (kpiSlowest) kpiSlowest.textContent = formatDuration(maxMs);
 
-    // ═══ 6. Distribution buckets ═══
     const buckets = [
         { label: '< 2h',  min: 0, max: 2 * 3600 * 1000, class: 'fast' },
         { label: '2-6h',  min: 2 * 3600 * 1000, max: 6 * 3600 * 1000, class: 'medium' },
@@ -2811,15 +2658,14 @@ async function renderProcessingTimes(slips) {
         }).join('');
     }
 
-    // ═══ 7. Speed ranking by agent ═══
     const agentsSpeed = Object.entries(agentTimes)
         .map(([name, times]) => ({
             name,
             avgMs: times.reduce((a, b) => a + b, 0) / times.length,
             count: times.length
         }))
-        .filter(a => a.count >= 1)  // at least 1 order
-        .sort((a, b) => a.avgMs - b.avgMs);  // fastest first
+        .filter(a => a.count >= 1)
+        .sort((a, b) => a.avgMs - b.avgMs);
 
     if (agentsSpeedList) {
         if (agentsSpeed.length === 0) {
@@ -2830,7 +2676,6 @@ async function renderProcessingTimes(slips) {
             const range = slowestMs - fastestMs;
 
             agentsSpeedList.innerHTML = agentsSpeed.slice(0, 5).map((a, i) => {
-                // Determine if "slow" (color red)
                 const isSlow = range > 0 && (a.avgMs - fastestMs) / range > 0.6;
                 const timeClass = isSlow ? 'slow' : '';
 
@@ -2855,12 +2700,10 @@ async function renderProcessingTimes(slips) {
     console.log(`✅ [Processing Times] ${orderTimes.length} orders analyzed · avg ${formatDuration(avgMs)}`);
 }
 
-/* ─── Helper: Check if element exists ─── */
 function container_exists(id) {
     return !!document.getElementById(id);
 }
 
-/* ─── Helper: Format duration ms → "2h 45m" ─── */
 function formatDuration(ms) {
     if (!ms || ms < 0) return '--';
     
