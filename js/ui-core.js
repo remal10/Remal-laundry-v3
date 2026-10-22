@@ -268,9 +268,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof calculateGlobalTotals === 'function') calculateGlobalTotals();
 
     chargerPmsLocalStorage();
-    await chargerDonneesEtAbonnementCloud();
+    
+    // ✅ CORRECTION : On attend que la fonction existe avant de l'appeler
+    if (typeof chargerDonneesEtAbonnementCloud === 'function') {
+        await chargerDonneesEtAbonnementCloud();
+    } else {
+        console.warn("⚠️ [ui-core] chargerDonneesEtAbonnementCloud n'est pas encore chargée, on passe.");
+    }
 
-    if (Object.keys(pmsDatabase).length > 0) {
+    if (Object.keys(pmsDatabase).length > 0 && typeof renderMassPreviewTable === 'function') {
         renderMassPreviewTable();
     }
 
@@ -278,7 +284,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const spaDateEl = document.getElementById('spa-current-date');
     if(spaDateEl) spaDateEl.innerText = new Date().toLocaleDateString('fr-FR', options);
 
-    // Serial No — laissé VIDE par défaut (saisie manuelle)
     const serialEl = document.getElementById('spa-serial-no');
     if (serialEl && !serialEl.value) serialEl.value = '';
 
@@ -298,19 +303,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     programmerTimerReinitialisationMinuit();
 
-    checkStaffSession(); 
+    if (typeof checkStaffSession === 'function') {
+        checkStaffSession(); 
+    } else {
+        console.warn("⚠️ [ui-core] checkStaffSession n'est pas encore chargée.");
+    }
 
-    // PHASE E — Raccourcis & Auto-complétion
     if (typeof initPhaseE === 'function') initPhaseE();
 
-    // 🚨 Init badge Checkout Today
     setTimeout(() => {
         if (typeof updateCheckoutTodayBadge === 'function') {
             updateCheckoutTodayBadge();
         }
     }, 2500);
 });
-
 // ═══════════════════════════════════════════════════════════════════
 // ✨ SPRINT 1.5 — MENU MOBILE STAFF (⋯)
 // ═══════════════════════════════════════════════════════════════════
