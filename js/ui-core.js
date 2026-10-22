@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════
 // REMAL LAUNDRY OS — UI CORE
 // Setup, détection appareil, session staff, thème, initialisation
-// ⚠️ DOIT ÊTRE CHARGÉ EN PREMIER
+// ⚠️ DOIT ÊTRE CHARGÉ EN DERNIER
 // ═══════════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════════
@@ -43,11 +43,10 @@ function activerSwipeNavigation() {
     const body = document.getElementById('bodyRoot') || document.body;
     if (!body.classList.contains('is-touch')) return;
     
-    // 🎯 FIX : Ajout de toutes les sections (incluant linenControl, checkout, stock...)
     const isAdminUser = (typeof isAdmin === 'function') ? isAdmin() : false;
     const sections = isAdminUser
     ? ['liveRecord', 'spa', 'checkout', 'stock', 'linenControl', 'lostfound', 'pdfList', 'massEntry', 'dashboard', 'adminChat']
-    : ['liveRecord', 'spa']; // Staff : uniquement Laundry + SPA
+    : ['liveRecord', 'spa'];
 
     let touchStartX = 0;
     let touchStartY = 0;
@@ -98,10 +97,6 @@ function activerSwipeNavigation() {
     
     console.log('✅ Swipe navigation activée');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(activerSwipeNavigation, 500);
-});
 
 // ═══════════════════════════════════════════════════════════════════
 // AUTO-SCROLL NAV
@@ -249,27 +244,27 @@ function demanderConfirmationPinAdmin(actionCallback) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// INITIALISATION
+// INITIALISATION (Appelée depuis index.html)
 // ═══════════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
     initTheme();
 
     if (typeof pdfjsLib !== 'undefined') {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     }
 
-    switchMainSection('liveRecord');
-    setLang('en');
+    if (typeof switchMainSection === 'function') switchMainSection('liveRecord');
+    if (typeof setLang === 'function') setLang('en');
 
-    chargerPanierLocal();
+    if (typeof chargerPanierLocal === 'function') chargerPanierLocal();
 
-    selectCountType(currentCountType || 'hotel');
-    renderItems();
+    if (typeof selectCountType === 'function') selectCountType(currentCountType || 'hotel');
+    if (typeof renderItems === 'function') renderItems();
     if (typeof calculateGlobalTotals === 'function') calculateGlobalTotals();
 
-    chargerPmsLocalStorage();
+    if (typeof chargerPmsLocalStorage === 'function') chargerPmsLocalStorage();
     
-    // ✅ CORRECTION : On attend que la fonction existe avant de l'appeler
+    // On attend que la fonction existe avant de l'appeler
     if (typeof chargerDonneesEtAbonnementCloud === 'function') {
         await chargerDonneesEtAbonnementCloud();
     } else {
@@ -301,8 +296,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(delDate && !delDate.value) delDate.value = todayIso;
     if(delTime && !delTime.value) delTime.value = timeIso;
 
-    programmerTimerReinitialisationMinuit();
+    if (typeof programmerTimerReinitialisationMinuit === 'function') programmerTimerReinitialisationMinuit();
 
+    // ✅ APPEL DU LOGIN
     if (typeof checkStaffSession === 'function') {
         checkStaffSession(); 
     } else {
@@ -315,8 +311,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof updateCheckoutTodayBadge === 'function') {
             updateCheckoutTodayBadge();
         }
-    }, 2500);
-});
+        // Swipe nav activée après le chargement
+        activerSwipeNavigation();
+    }, 1500);
+}
+
+window.initApp = initApp; // On l'expose globalement
+
 // ═══════════════════════════════════════════════════════════════════
 // ✨ SPRINT 1.5 — MENU MOBILE STAFF (⋯)
 // ═══════════════════════════════════════════════════════════════════
