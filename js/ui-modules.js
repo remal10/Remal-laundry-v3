@@ -1644,12 +1644,12 @@ async function verifyStaffPin() {
     }
 
     try {
-        const { data, error } = await supabaseClient
-            .from('laundry_staff')
-            .select('*')
-            .eq('pin_code', pin)
-            .eq('is_active', true)
-           .maybeSingle();
+       const { data, error } = await supabaseClient
+    .from('laundry_staff')
+    .select('*')
+    .eq('pin_code', pin)
+    // .eq('is_active', true)
+    .maybeSingle();
 
         if (error || !data) {
             if(errorMsg) errorMsg.classList.remove('hidden');
