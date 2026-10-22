@@ -1571,12 +1571,11 @@ async function verifyStaffPin() {
     }
 
     try {
-        const { data, error } = await supabaseClient
-            .from('laundry_staff')
-            .select('*')
-            .eq('pin_code', pin)
-            .eq('is_active', true)
-            .maybeSingle();
+       const { data, error } = await supabaseClient
+    .from('laundry_staff')
+    .select('*')
+    .eq('pin_code', pin)
+    .maybeSingle();
           console.log("🔍 [Login] Réponse Supabase :", { data, error });
         if (error || !data) {
             if(errorMsg) errorMsg.classList.remove('hidden');
