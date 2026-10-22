@@ -1920,7 +1920,7 @@ if ('serviceWorker' in navigator) {
 
 <!-- 🛡️ SÉCURITÉ STRICTE : Injection des boutons Admin uniquement -->
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', async () => {
     // On vérifie toutes les 500ms si le rôle de l'utilisateur est prêt
     const checkAdminAndInject = setInterval(() => {
         if (typeof isAdmin === 'function' && typeof currentStaffUser !== 'undefined') {
