@@ -1973,5 +1973,14 @@ window.__adminChatSend = async function () {
     }
 };
 </script>
+    <script>
+    setTimeout(() => {
+        if (typeof initApp === 'function') {
+            initApp();
+        } else {
+            console.error("❌ La fonction initApp() n'a pas été trouvée.");
+        }
+    }, 500);
+</script>
 </body>
   </html>
