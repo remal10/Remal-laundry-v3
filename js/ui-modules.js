@@ -1631,6 +1631,9 @@ async function verifyStaffPin() {
     const pin = pinInput ? pinInput.value.trim() : '';
 
     if (!pin) return;
+    
+    // 🔍 DEBUG : On affiche le PIN tapé
+    console.log("🔍 [Login Debug] PIN tapé :", pin);
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
         if (pin === '1234') {
@@ -1643,14 +1646,18 @@ async function verifyStaffPin() {
         }
     }
 
-    try {
-       const { data, error } = await supabaseClient
-    .from('laundry_staff')
-    .select('*')
-    .eq('pin_code', pin)
-    // .eq('is_active', true)
-    .maybeSingle();
+   try {
+    const { data, error } = await supabaseClient
+        .from('laundry_staff')
+        .select('*')
+        .eq('pin_code', pin)
+        // .eq('is_active', true) // (déjà commenté normalement)
+        .maybeSingle();
+        
+    // 🔍 DEBUG : On affiche la réponse exacte de Supabase
+    console.log("🔍 [Login Debug] Réponse Supabase :", { data, error });
 
+    if (error || !data) {
         if (error || !data) {
             if(errorMsg) errorMsg.classList.remove('hidden');
             if(pinInput) pinInput.value = '';
