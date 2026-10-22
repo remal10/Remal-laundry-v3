@@ -1556,7 +1556,7 @@ async function verifyStaffPin() {
     const pinInput = document.getElementById('staffPinInput');
     const errorMsg = document.getElementById('loginErrorMsg');
     const pin = pinInput ? pinInput.value.trim() : '';
-
+   console.log("🔍 [Login] PIN tapé :", pin);
     if (!pin) return;
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
@@ -1577,7 +1577,7 @@ async function verifyStaffPin() {
             .eq('pin_code', pin)
             .eq('is_active', true)
             .maybeSingle();
-
+          console.log("🔍 [Login] Réponse Supabase :", { data, error });
         if (error || !data) {
             if(errorMsg) errorMsg.classList.remove('hidden');
             if(pinInput) pinInput.value = '';
