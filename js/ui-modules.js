@@ -10,9 +10,11 @@
 // PHASE 2.3 — DATE FILTER STATE
 // ═══════════════════════════════════════════════════════════════════
 
-// ⚠️ DÉCLARÉ DANS ui-live.js - NE PAS REDÉCLARER ICI
-// let currentStatusFilter = 'all';
-// let currentDateFilter = null;
+// Phase 2.2 — Status filter ('all' | 'pending' | 'washing' | 'ready' | 'delivered')
+let currentStatusFilter = 'all';
+
+// Phase 2.3 — Quick date filter ('today' | '7d' | '30d' | '90d' | null = no filter)
+let currentDateFilter = null;
 
 // ═══════════════════════════════════════════════════════════════════
 // PHASE 5 — ROLE MANAGEMENT (Admin / Staff)
@@ -1453,7 +1455,8 @@ function renderManagementDashboard() {
         renderAgentPerformance(m && m.slips ? m.slips : []);
     }
 
-    // ═══ 10. Processing Times ═══    if (typeof renderProcessingTimes === 'function') {
+    // ═══ 10. Processing Times ═══
+    if (typeof renderProcessingTimes === 'function') {
         renderProcessingTimes(m && m.slips ? m.slips : []);
     }
 }
