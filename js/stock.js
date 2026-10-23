@@ -280,7 +280,7 @@ async function renderStockList() {
         // Fetch items (with cache)
         const items = await fetchStockItems();
         stockItems = items;
-
+console.log("🔍 [Stock Debug] Items reçus :", items);
         // Update stats
         updateStockStats(items);
 
