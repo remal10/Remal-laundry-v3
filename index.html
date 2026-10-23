@@ -112,38 +112,51 @@
         #roleBadgeNameSidebar { font-size: 14px; font-weight: 600; color: #fff; }
         #roleBadgeRoleSidebar { font-size: 11px; color: #a8a29e; text-transform: capitalize; }
 
-        /* --- BOUTONS STATUTS DYNAMIQUES ET ÉLÉGANTS --- */
-        .status-btn {
-            padding: 8px 16px; border-radius: 99px; font-size: 11px; font-weight: 700;
-            transition: all 0.3s ease; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px;
-            text-transform: uppercase; letter-spacing: 0.5px;
+        /* --- MENU DÉROULANT DES STATUTS --- */
+        .status-dropdown { position: relative; display: inline-block; }
+        .status-menu {
+            position: absolute; top: 100%; right: 0; margin-top: 8px;
+            background-color: #181614; border: 1px solid #2f2820; border-radius: 16px;
+            padding: 8px; display: flex; flex-direction: column; gap: 6px;
+            min-width: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 50;
         }
-        .status-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .status-dropdown:hover .status-menu, .status-dropdown:focus-within .status-menu { opacity: 1; visibility: visible; transform: translateY(0); }
         
-        .status-collected { background: rgba(220, 167, 115, 0.15); color: #DCA773; border-color: rgba(220, 167, 115, 0.3); }
-        .status-collected:hover { background: #DCA773; color: #0f0e0c; }
+        .status-menu-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            border-radius: 10px; font-size: 12px; font-weight: 700; text-decoration: none;
+            transition: all 0.2s; cursor: pointer; border: none; width: 100%; text-align: left;
+        }
+        .status-menu-item:hover { transform: translateX(4px); }
         
-        .status-washing { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
-        .status-washing:hover { background: #3b82f6; color: #fff; }
-        
-        .status-ready { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
-        .status-ready:hover { background: #10b981; color: #fff; }
-        
-        .status-delivered { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
-        .status-delivered:hover { background: #8b5cf6; color: #fff; }
+        .s-collected { color: #DCA773; background: rgba(220, 167, 115, 0.1); }
+        .s-collected:hover { background: #DCA773; color: #0f0e0c; }
+        .s-washing { color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
+        .s-washing:hover { background: #3b82f6; color: #fff; }
+        .s-ready { color: #34d399; background: rgba(16, 185, 129, 0.1); }
+        .s-ready:hover { background: #10b981; color: #fff; }
+        .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
+        .s-delivered:hover { background: #8b5cf6; color: #fff; }
+
+        /* Cacher sur PC, visible sur Mobile */
+        .mobile-only-btn { display: none !important; }
+        @media (max-width: 768px) { .mobile-only-btn { display: flex !important; } }
 
         /* --- MODE CLAIR (UNIFORMISÉ) --- */
         body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
         body.light-mode .app-topbar { background-color: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #e5e7eb !important; }
         body.light-mode .app-sidebar { background-color: #ffffff !important; border-right: 1px solid #e5e7eb !important; }
         body.light-mode .app-content { background-color: #f3f4f6 !important; }
-        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div { 
+        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div, body.light-mode .status-btn-bar { 
             background-color: #ffffff !important; border-color: #e5e7eb !important; color: #1f2937 !important; 
         }
         body.light-mode .text-stone-200, body.light-mode .text-stone-300, body.light-mode .text-stone-400 { color: #4b5563 !important; }
         body.light-mode .header-action-btn { background-color: #ffffff !important; border-color: #e5e7eb !important; color: #4b5563 !important; }
         body.light-mode .sidebar-link { color: #4b5563 !important; }
         body.light-mode .sidebar-link:hover, body.light-mode .sidebar-link.active { color: #DCA773 !important; background-color: #fef3c7 !important; }
+        body.light-mode .status-menu { background-color: #ffffff !important; border-color: #e5e7eb !important; }
 
         /* --- STYLES PDF ET IMPRESSION --- */
         @media print {
@@ -227,7 +240,7 @@
             </a>
         </nav>
 
-        <!-- User Info (Sans Logout pour éviter la confusion) -->
+        <!-- User Info (Sans Logout) -->
         <div class="p-5 border-t border-[#2f2820]">
             <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#0f0e0c] border border-[#2f2820]">
                 <div class="w-10 h-10 rounded-full bg-[#DCA773] text-[#0f0e0c] flex items-center justify-center font-black text-sm" id="roleBadgeIconSidebar">A</div>
@@ -249,7 +262,7 @@
         <header class="app-topbar no-print">
             <!-- Partie Gauche : Menu + Logo + Indicateurs -->
             <div class="flex items-center gap-4">
-                <!-- Bouton Menu (Toujours visible) -->
+                <!-- Bouton Menu -->
                 <button onclick="toggleAppSidebar()" class="header-action-btn" title="Menu">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
@@ -284,19 +297,19 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Toggle Theme (Visible sur PC et Mobile) -->
+                <!-- Toggle Theme -->
                 <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
 
-                <!-- Sélecteur de langue (Visible sur PC et Mobile) -->
+                <!-- Sélecteur de langue -->
                 <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn hidden sm:flex" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
                     <option value="en">EN</option>
                     <option value="ar">AR</option>
                     <option value="hi">HI</option>
                 </select>
 
-                <!-- Logout (Visible sur PC et Mobile désormais) -->
+                <!-- Logout -->
                 <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
@@ -552,10 +565,13 @@
                             <span class="hidden sm:inline">Active Rooms List</span>
                             <span class="sm:hidden">List</span>
                         </button>
-                        <button onclick="switchMainSection('spa')" class="flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                        
+                        <!-- Bouton SPA (Uniquement sur Mobile grâce à la classe mobile-only-btn) -->
+                        <button onclick="switchMainSection('spa')" class="mobile-only-btn flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
                             <i class="fas fa-spa text-[#DCA773]"></i>
                             <span>SPA</span>
                         </button>
+
                         <button onclick="ouvrirCheckoutTodayModal()" id="checkoutTodayBanner" class="flex-1 md:flex-none bg-stone-800/60 hover:bg-stone-700/80 text-stone-300 border border-stone-700 font-bold px-3 py-2 rounded-xl text-xs inline-flex items-center justify-center gap-1.5 transition">
                             <i class="fas fa-check-circle text-emerald-400" id="checkoutBannerIcon"></i>
                             <span class="checkout-banner-text">Checkout</span>
@@ -570,6 +586,32 @@
                             <span class="hidden sm:inline">Download PDFs</span>
                             <span class="sm:hidden">PDF</span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- Barre d'actions : Select, Delete, Set Status -->
+                <div class="status-btn-bar flex flex-wrap items-center gap-3 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
+                    <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                        <span class="text-emerald-400">☑</span> SELECT ALL
+                    </button>
+                    <button onclick="deselectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                        <span class="text-rose-400">✖</span> DESELECT ALL
+                    </button>
+                    <button onclick="deleteSelectedRooms()" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-200 border border-rose-800 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                        <span>🗑️</span> DELETE SELECTED
+                    </button>
+
+                    <!-- Le Menu Déroulant des Statuts -->
+                    <div class="status-dropdown ml-auto">
+                        <button class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                            SET STATUS <span class="text-[#DCA773] text-[10px]">▼</span>
+                        </button>
+                        <div class="status-menu">
+                            <button onclick="setStatusForSelected('collected')" class="status-menu-item s-collected"><i class="fas fa-box"></i> COLLECTED</button>
+                            <button onclick="setStatusForSelected('washing')" class="status-menu-item s-washing"><i class="fas fa-soap"></i> WASHING</button>
+                            <button onclick="setStatusForSelected('ready')" class="status-menu-item s-ready"><i class="fas fa-check-circle"></i> READY</button>
+                            <button onclick="setStatusForSelected('delivered')" class="status-menu-item s-delivered"><i class="fas fa-truck"></i> DELIVERED</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1995,4 +2037,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-    </html>
+</html>
