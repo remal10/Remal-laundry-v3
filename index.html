@@ -133,7 +133,10 @@
         .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
         .s-delivered:hover { background: #8b5cf6; color: #fff; }
 
-        /* --- GESTION MOBILE (CACHER LA BARRE SUR MOBILE) --- */
+        /* --- GESTION MOBILE (CACHER LA BARRE SELECT SUR MOBILE) --- */
+        .desktop-only-flex { display: flex; }
+        .mobile-only-menu { display: none; }
+
         @media (max-width: 768px) {
             .app-content { padding: 16px; }
             .remal-card { padding: 16px !important; }
@@ -141,6 +144,10 @@
             
             /* Cacher la barre d'actions Select/Delete sur Mobile */
             .status-btn-bar { display: none !important; }
+            
+            /* Gestion de l'en-tête Mobile */
+            .desktop-only-flex { display: none !important; }
+            .mobile-only-menu { display: block !important; }
         }
 
         /* --- MODE CLAIR (UNIFORMISÉ) --- */
@@ -239,7 +246,7 @@
             </a>
         </nav>
 
-        <!-- User Info (Sans Logout) -->
+        <!-- User Info -->
         <div class="p-5 border-t border-[#2f2820]">
             <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#0f0e0c] border border-[#2f2820]">
                 <div class="w-10 h-10 rounded-full bg-[#DCA773] text-[#0f0e0c] flex items-center justify-center font-black text-sm" id="roleBadgeIconSidebar">A</div>
@@ -296,8 +303,8 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Boutons Desktop (Cachés sur mobile) -->
-                <div class="hidden md:flex items-center gap-2">
+                <!-- Boutons Desktop (Cachés sur mobile via CSS) -->
+                <div class="desktop-only-flex items-center gap-2">
                     <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
@@ -311,8 +318,8 @@
                     </button>
                 </div>
 
-                <!-- Menu 3 points (Mobile uniquement) -->
-                <div class="md:hidden relative">
+                <!-- Menu 3 points (Mobile uniquement via CSS) -->
+                <div class="mobile-only-menu relative">
                     <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
@@ -2053,4 +2060,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-</html>
+                </html>
