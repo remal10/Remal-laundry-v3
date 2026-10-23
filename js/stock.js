@@ -317,9 +317,10 @@ async function renderStockList() {
 async function fetchStockItems() {
     // Cache
     const now = Date.now();
-    if (stockCache.items && stockCache.items.length > 0 && (now - stockCache.timestamp) < STOCK_CACHE_TTL) {
-        return stockCache.items;
-    }
+// ✅ CACHE DÉSACTIVÉ POUR LE DEBUG
+// if (stockCache.items && stockCache.items.length > 0 && (now - stockCache.timestamp) < STOCK_CACHE_TTL) {
+//     return stockCache.items;
+// }
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
         return [];
