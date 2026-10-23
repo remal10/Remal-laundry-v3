@@ -295,38 +295,38 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Boutons Desktop -->
-                <div class="desktop-only items-center gap-2">
-                    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                    <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
-                        <option value="en">EN</option>
-                        <option value="ar">AR</option>
-                        <option value="hi">HI</option>
-                    </select>
-                    <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+<!-- Boutons Desktop (Visibles uniquement sur PC) -->
+<div class="desktop-only-flex items-center gap-2">
+    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
+        <option value="en">EN</option>
+        <option value="ar">AR</option>
+        <option value="hi">HI</option>
+    </select>
+    <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
+</div>
 
-                <!-- Menu 3 points (Mobile) -->
-                <div class="mobile-only-menu relative">
-                    <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
-                        <i class="fas fa-ellipsis-vertical"></i>
-                    </button>
-                    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-[100] flex flex-col gap-1">
-                        <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
-                            <i class="fas fa-moon text-[#DCA773]"></i> Theme
-                        </button>
-                        <button onclick="setLang('ar'); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
-                            <i class="fas fa-globe text-[#DCA773]"></i> Language
-                        </button>
-                        <button onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-[#2f2820] rounded-lg">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
-                    </div>
-                </div>
+<!-- Menu 3 points (Visible uniquement sur Mobile) -->
+<div class="mobile-only-menu relative">
+    <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
+        <i class="fas fa-ellipsis-vertical"></i>
+    </button>
+    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-[100] flex flex-col gap-1">
+        <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+            <i class="fas fa-moon text-[#DCA773]"></i> Theme
+        </button>
+        <button onclick="setLang('ar'); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+            <i class="fas fa-globe text-[#DCA773]"></i> Language
+        </button>
+        <button onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-[#2f2820] rounded-lg">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</div>
             </div>
         </header>
 
