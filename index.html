@@ -275,7 +275,8 @@
             <div class="flex items-center gap-2">
                 <div id="headerAdminContainer"></div>
 
-                <button onclick="switchMainSection('adminChat')" class="header-action-btn relative" title="Chat">
+                <!-- Bouton Chat (Caché pour le staff) -->
+                <button onclick="switchMainSection('adminChat')" class="header-action-btn relative" title="Chat" data-admin-only="true">
                     <i class="fas fa-comments"></i>
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
@@ -586,8 +587,8 @@
                     </div>
                 </div>
 
-                <!-- Barre d'actions : Select, Delete, Set Status -->
-                <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
+                <!-- Barre d'actions : Select, Delete, Set Status (Cachée pour le Staff) -->
+                <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4" data-admin-only="true">
                     <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
                         <span class="text-emerald-400">☑</span> SELECT ALL
                     </button>
