@@ -26,6 +26,7 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="assets/css/premium-effects.css">
+    <style id="force-fix">@media (max-width: 768px) { .status-btn-bar { display: none !important; } .mobile-only-menu { display: block !important; } } @media (min-width: 769px) { .mobile-only-menu { display: none !important; } .status-btn-bar { display: flex !important; } }</style>
 
     <style>
         /* --- CORRECTIFS PRIORITAIRES POUR ÉCRASER STYLE.CSS --- */
@@ -190,6 +191,28 @@
     .mobile-only-menu { display: none !important; }
     .desktop-only-flex { display: flex !important; }
     .status-btn-bar { display: flex !important; }
+}
+        /* --- FORCE L'AFFICHAGE DU BOUTON 3 POINTS ET CACHE LA BARRE --- */
+@media (max-width: 768px) {
+    /* Cache les boutons PC */
+    .desktop-only-flex { display: none !important; }
+    
+    /* Cache totalement la barre Select/Delete sur mobile */
+    .status-btn-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
+    
+    /* Force l'affichage des 3 points sur mobile */
+    .mobile-only-menu { display: block !important; visibility: visible !important; opacity: 1 !important; }
+    
+    /* Force l'affichage du bouton lui-même au cas où le script le cible */
+    .mobile-only-menu button { display: flex !important; visibility: visible !important; }
+}
+
+@media (min-width: 769px) {
+    /* Sur PC, on cache les 3 points */
+    .mobile-only-menu { display: none !important; }
+    /* Sur PC, on affiche les boutons et la barre Select */
+    .desktop-only-flex { display: flex !important; }
+    .status-btn-bar { display: flex !important; visibility: visible !important; height: auto !important; }
 }
     </style>
 </head>
