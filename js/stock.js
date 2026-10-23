@@ -13,7 +13,7 @@ let currentMovementType = 'in';  // 'in' or 'out'
 let stockLoading = false;
 
 const STOCK_CACHE_KEY = 'remal_stock_cache';
-const STOCK_CACHE_TTL = 60000; // 1 min
+const STOCK_CACHE_TTL = 0; // ✅ Désactivé pour forcer le rafraîchissement
 
 let stockCache = {
     items: null,
