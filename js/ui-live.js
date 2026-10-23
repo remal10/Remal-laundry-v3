@@ -7,6 +7,7 @@
 // ✅ BATCH PRINT V2 : Clone #pdfExportArea (même design que la modale)
 // ✅ REFRESH FIX : refreshAllViews() synchronise l'UI instantanément
 // ✅ LINEN FIX : garde-fou switchMainSection + attachLinenFormHandler
+// ✅ STOCK/CHECKOUT FIX : chargement automatique dans switchMainSection
 // ═══════════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1388,6 +1389,7 @@ function dismissGuestNotificationBanner() {
 // ═══════════════════════════════════════════════════════════════════
 // 🎯 PATCH GLOBAL — SWITCH SECTION (Linen Control + Admin Chat)
 // ✅ FIX LINEN : garde-fou sectionLinenControl + attachLinenFormHandler
+// ✅ STOCK/CHECKOUT FIX : chargement automatique
 // ═══════════════════════════════════════════════════════════════════
 (function patchSwitchMainSection() {
     function wrapSwitch() {
@@ -1452,6 +1454,14 @@ function dismissGuestNotificationBanner() {
                 if (typeof renderManagementDashboard === 'function') renderManagementDashboard();
             } else if (sectionName === 'pdfList') {
                 if (typeof afficherListeBordereauxLocal === 'function') afficherListeBordereauxLocal();
+            } else if (sectionName === 'stock') {
+                setTimeout(() => {
+                    if (typeof renderStockList === 'function') renderStockList();
+                }, 100);
+            } else if (sectionName === 'checkout') {
+                setTimeout(() => {
+                    if (typeof renderCheckoutList === 'function') renderCheckoutList();
+                }, 100);
             }
         };
 
