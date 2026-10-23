@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// REMAL LAUNDRY OS — UI CORE (Version corrigée)
+// REMAL LAUNDRY OS — UI CORE (Version finale corrigée)
 // Setup, détection appareil, session staff, thème, initialisation
 // ⚠️ DOIT ÊTRE CHARGÉ EN DERNIER
 // ═══════════════════════════════════════════════════════════════════
@@ -264,7 +264,6 @@ async function initApp() {
 
     if (typeof chargerPmsLocalStorage === 'function') chargerPmsLocalStorage();
     
-    // On attend que la fonction existe avant de l'appeler
     if (typeof chargerDonneesEtAbonnementCloud === 'function') {
         await chargerDonneesEtAbonnementCloud();
     } else {
@@ -298,7 +297,6 @@ async function initApp() {
 
     if (typeof programmerTimerReinitialisationMinuit === 'function') programmerTimerReinitialisationMinuit();
 
-    // ✅ APPEL DU LOGIN
     if (typeof checkStaffSession === 'function') {
         checkStaffSession(); 
     } else {
@@ -311,20 +309,11 @@ async function initApp() {
         if (typeof updateCheckoutTodayBadge === 'function') {
             updateCheckoutTodayBadge();
         }
-        // Swipe nav activée après le chargement
         activerSwipeNavigation();
     }, 1500);
 }
 
-window.initApp = initApp; // On l'expose globalement
-
-// ═══════════════════════════════════════════════════════════════════
-// ✨ MENU MOBILE (3 POINTS) - LOGIQUE SIMPLIFIÉE
-// ═══════════════════════════════════════════════════════════════════
-// L'ancien système (staffMobileMenu) a été désactivé. 
-// Désormais, le bouton et son menu sont gérés directement dans le HTML
-// via la fonction onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')"
-// Nous n'avons plus besoin d'écouter les clics ici.
+window.initApp = initApp;
 
 // ═══════════════════════════════════════════════════════════════════
 // SUPERVISOR — Status Change Logger
