@@ -180,6 +180,17 @@
     .desktop-only-flex { display: flex !important; }
     .status-btn-bar { display: flex !important; }
 }
+        /* --- CORRECTION FINALE 3 POINTS ET BARRE MOBILE --- */
+@media (max-width: 768px) {
+    .status-btn-bar { display: none !important; }
+    .desktop-only-flex { display: none !important; }
+    .mobile-only-menu { display: block !important; }
+}
+@media (min-width: 769px) {
+    .mobile-only-menu { display: none !important; }
+    .desktop-only-flex { display: flex !important; }
+    .status-btn-bar { display: flex !important; }
+}
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
