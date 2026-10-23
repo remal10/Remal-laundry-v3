@@ -522,7 +522,7 @@ async function renderCheckoutList() {
                 .select('*')
                 .order('created_at', { ascending: false })
                 .limit(200);
-
+console.log("🔍 [Checkout Debug] Réponse Supabase :", { data, error });
             if (!error && data) {
                 records = data;
                 console.log(`🧳 [Checkout] Loaded ${records.length} records from Supabase`);
