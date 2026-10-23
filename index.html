@@ -35,7 +35,7 @@
         /* --- LAYOUT PRINCIPAL --- */
         .app-layout { display: flex; height: 100vh; overflow: hidden; position: relative; }
         
-        /* --- SIDEBAR FLUIDE (Cachée par défaut) --- */
+        /* --- SIDEBAR FLUIDE --- */
         .app-sidebar {
             width: 280px; background-color: #181614; border-right: 1px solid #2f2820;
             display: flex; flex-direction: column; flex-shrink: 0;
@@ -84,7 +84,7 @@
         }
         .header-action-btn:hover { color: #DCA773; border-color: #DCA773; background-color: #181614; }
 
-        /* --- RANGEMENT DES CARTES QUICK ACTIONS (PC / MOBILE) --- */
+        /* --- RANGEMENT DES CARTES QUICK ACTIONS --- */
         .quick-actions-grid {
             display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px;
         }
@@ -191,7 +191,7 @@
 <!-- ═══ APP LAYOUT ═══ -->
 <div class="app-layout">
 
-    <!-- ═══ SIDEBAR (Cachée par défaut) ═══ -->
+    <!-- ═══ SIDEBAR ═══ -->
     <aside id="appSidebar" class="app-sidebar">
         <!-- Logo -->
         <div class="p-6 border-b border-[#2f2820] flex items-center gap-3 cursor-pointer" onclick="switchMainSection('liveRecord'); toggleAppSidebar();">
@@ -256,20 +256,16 @@
         
         <!-- Topbar -->
         <header class="app-topbar no-print">
-            <!-- Partie Gauche : Menu + Logo + Indicateurs -->
             <div class="flex items-center gap-4">
-                <!-- Bouton Menu -->
                 <button onclick="toggleAppSidebar()" class="header-action-btn" title="Menu">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
 
-                <!-- Logo Mini -->
                 <div class="flex items-center gap-2 cursor-pointer" onclick="switchMainSection('liveRecord')">
                     <img src="assets/remal-logo.png" alt="Remal" class="h-8 w-auto object-contain">
                     <h1 class="font-serif-luxury text-lg text-[#DCA773] font-bold tracking-widest leading-none hidden sm:block">REMAL</h1>
                 </div>
 
-                <!-- Indicateurs (Sync + Occupancy) -->
                 <div class="hidden md:flex items-center gap-2 ml-2">
                     <div class="inline-flex items-center gap-2 text-[11px] text-amber-400/90 font-medium bg-[#0f0e0c] px-3 py-1.5 rounded-full border border-[#2f2820]">
                         <span>🕒 PMS:</span>
@@ -283,11 +279,9 @@
                 </div>
             </div>
 
-            <!-- Partie Droite : Chat + Langue + Thème + Logout -->
             <div class="flex items-center gap-2">
                 <div id="headerAdminContainer"></div>
 
-                <!-- Bouton Chat Global -->
                 <button onclick="switchMainSection('adminChat')" class="header-action-btn relative" title="Chat">
                     <i class="fas fa-comments"></i>
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
@@ -308,13 +302,12 @@
                     </button>
                 </div>
 
-                <!-- Menu 3 points (Mobile uniquement) -->
-                <div class="md:hidden relative">
+                <!-- Menu 3 points (Mobile) -->
+                <div class="flex md:hidden relative">
                     <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
-                    <!-- Menu déroulant des 3 points -->
-                    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-50 flex flex-col gap-1">
+                    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-[100] flex flex-col gap-1">
                         <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
                             <i class="fas fa-moon text-[#DCA773]"></i> Theme
                         </button>
@@ -561,17 +554,15 @@
                 </div>
             </div>
 
-            <!-- ═══ SECTION: LIVE RECORD (RANGÉE) ═══ -->
+            <!-- ═══ SECTION: LIVE RECORD ═══ -->
             <div id="sectionLiveRecord" class="space-y-4 no-print">
                 <!-- Barre d'outils Active Rooms -->
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#181614] p-4 rounded-2xl border border-[#2f2820]">
-                    <!-- Titre et compteur -->
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-bold text-stone-200 uppercase tracking-wider" id="lblActiveRoomsHeader">Active Rooms & SPA</span>
                         <span id="activeRoomsCountBadge" class="text-xs bg-[#0f0e0c] border border-[#2f2820] text-[#DCA773] font-bold px-3 py-1 rounded-full">0</span>
                     </div>
 
-                    <!-- Boutons d'action -->
                     <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                         <button onclick="ouvrirModalActiveRoomsList()" class="flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition">
                             <i class="fas fa-list-ol text-[#DCA773]"></i>
@@ -602,7 +593,7 @@
                     </div>
                 </div>
 
-                <!-- Barre d'actions : Select, Delete, Set Status (Cachée sur mobile) -->
+                <!-- Barre d'actions : Select, Delete, Set Status -->
                 <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
                     <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
                         <span class="text-emerald-400">☑</span> SELECT ALL
@@ -2050,4 +2041,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-                    </html>
+                                                       </html>
