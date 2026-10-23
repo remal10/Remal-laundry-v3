@@ -112,6 +112,39 @@
         #roleBadgeNameSidebar { font-size: 14px; font-weight: 600; color: #fff; }
         #roleBadgeRoleSidebar { font-size: 11px; color: #a8a29e; text-transform: capitalize; }
 
+        /* --- BOUTONS STATUTS DYNAMIQUES ET ÉLÉGANTS --- */
+        .status-btn {
+            padding: 8px 16px; border-radius: 99px; font-size: 11px; font-weight: 700;
+            transition: all 0.3s ease; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .status-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        
+        .status-collected { background: rgba(220, 167, 115, 0.15); color: #DCA773; border-color: rgba(220, 167, 115, 0.3); }
+        .status-collected:hover { background: #DCA773; color: #0f0e0c; }
+        
+        .status-washing { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+        .status-washing:hover { background: #3b82f6; color: #fff; }
+        
+        .status-ready { background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.3); }
+        .status-ready:hover { background: #10b981; color: #fff; }
+        
+        .status-delivered { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.3); }
+        .status-delivered:hover { background: #8b5cf6; color: #fff; }
+
+        /* --- MODE CLAIR (UNIFORMISÉ) --- */
+        body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
+        body.light-mode .app-topbar { background-color: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #e5e7eb !important; }
+        body.light-mode .app-sidebar { background-color: #ffffff !important; border-right: 1px solid #e5e7eb !important; }
+        body.light-mode .app-content { background-color: #f3f4f6 !important; }
+        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div { 
+            background-color: #ffffff !important; border-color: #e5e7eb !important; color: #1f2937 !important; 
+        }
+        body.light-mode .text-stone-200, body.light-mode .text-stone-300, body.light-mode .text-stone-400 { color: #4b5563 !important; }
+        body.light-mode .header-action-btn { background-color: #ffffff !important; border-color: #e5e7eb !important; color: #4b5563 !important; }
+        body.light-mode .sidebar-link { color: #4b5563 !important; }
+        body.light-mode .sidebar-link:hover, body.light-mode .sidebar-link.active { color: #DCA773 !important; background-color: #fef3c7 !important; }
+
         /* --- STYLES PDF ET IMPRESSION --- */
         @media print {
             body.printing-linen > *:not(#linenPrintModal) { display: none !important; }
@@ -194,15 +227,14 @@
             </a>
         </nav>
 
-        <!-- User / Logout -->
+        <!-- User Info (Sans Logout pour éviter la confusion) -->
         <div class="p-5 border-t border-[#2f2820]">
-            <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#0f0e0c] border border-[#2f2820] cursor-pointer hover:border-[#DCA773] transition" onclick="confirmLogout()">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#0f0e0c] border border-[#2f2820]">
                 <div class="w-10 h-10 rounded-full bg-[#DCA773] text-[#0f0e0c] flex items-center justify-center font-black text-sm" id="roleBadgeIconSidebar">A</div>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-white truncate" id="roleBadgeNameSidebar">---</p>
                     <p class="text-xs text-stone-400" id="roleBadgeRoleSidebar">Staff</p>
                 </div>
-                <i class="fas fa-sign-out-alt text-stone-500 text-sm"></i>
             </div>
         </div>
     </aside>
@@ -246,26 +278,26 @@
             <div class="flex items-center gap-2">
                 <div id="headerAdminContainer"></div>
 
-                <!-- Bouton Chat Global (avec pastille) -->
+                <!-- Bouton Chat Global -->
                 <button onclick="switchMainSection('adminChat')" class="header-action-btn relative" title="Chat">
                     <i class="fas fa-comments"></i>
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Sélecteur de langue -->
-                <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
+                <!-- Toggle Theme (Visible sur PC et Mobile) -->
+                <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+
+                <!-- Sélecteur de langue (Visible sur PC et Mobile) -->
+                <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn hidden sm:flex" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
                     <option value="en">EN</option>
                     <option value="ar">AR</option>
                     <option value="hi">HI</option>
                 </select>
 
-                <!-- Toggle Theme -->
-                <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
-
-                <!-- Logout (Desktop) -->
-                <button onclick="confirmLogout()" class="header-action-btn hidden lg:flex" title="Logout">
+                <!-- Logout (Visible sur PC et Mobile désormais) -->
+                <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
@@ -519,6 +551,10 @@
                             <i class="fas fa-list-ol text-[#DCA773]"></i>
                             <span class="hidden sm:inline">Active Rooms List</span>
                             <span class="sm:hidden">List</span>
+                        </button>
+                        <button onclick="switchMainSection('spa')" class="flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                            <i class="fas fa-spa text-[#DCA773]"></i>
+                            <span>SPA</span>
                         </button>
                         <button onclick="ouvrirCheckoutTodayModal()" id="checkoutTodayBanner" class="flex-1 md:flex-none bg-stone-800/60 hover:bg-stone-700/80 text-stone-300 border border-stone-700 font-bold px-3 py-2 rounded-xl text-xs inline-flex items-center justify-center gap-1.5 transition">
                             <i class="fas fa-check-circle text-emerald-400" id="checkoutBannerIcon"></i>
@@ -1959,4 +1995,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-</html>
+    </html>
