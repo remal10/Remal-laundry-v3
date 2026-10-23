@@ -332,7 +332,7 @@ async function fetchStockItems() {
             .from('stock_items')
             .select('*')
             .order('name', { ascending: true });
-
+console.log("🔍 [Stock Debug] Réponse Supabase :", { data, error });
         if (error) {
             console.error('[Stock] Fetch error:', error.message);
             return [];
