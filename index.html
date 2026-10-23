@@ -36,216 +36,75 @@
             display: none !important;
         }
 
-        /* Nouvelles classes pour l'interface avec Sidebar */
-        .app-layout { display: flex; height: 100vh; overflow: hidden; }
+        /* Nouvelles classes pour l'interface avec Sidebar fluide */
+        .app-layout { display: flex; height: 100vh; overflow: hidden; position: relative; }
         
-        /* Sidebar */
+        /* Sidebar - Cachée par défaut, animation fluide */
         .app-sidebar {
-            width: 260px; background-color: #181614; border-right: 1px solid #2f2820;
+            width: 280px; background-color: #181614; border-right: 1px solid #2f2820;
             display: flex; flex-direction: column; flex-shrink: 0;
-            transition: transform 0.3s ease-in-out; z-index: 50;
+            position: fixed; left: 0; top: 0; bottom: 0;
+            transform: translateX(-100%); /* Caché par défaut */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Animation fluide */
+            z-index: 100; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
+        .app-sidebar.open { transform: translateX(0); }
+
         .sidebar-link {
-            display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin: 2px 8px;
-            border-radius: 10px; color: #a8a29e; font-weight: 600; font-size: 13px;
-            text-decoration: none; transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px; padding: 12px 18px; margin: 4px 12px;
+            border-radius: 12px; color: #a8a29e; font-weight: 600; font-size: 13px;
+            text-decoration: none; transition: all 0.3s ease;
         }
-        .sidebar-link:hover { background-color: #2f2820; color: #DCA773; }
-        .sidebar-link.active { background: linear-gradient(90deg, #DCA773, #c89360); color: #0f0e0c; font-weight: 800; }
-        .sidebar-link i { width: 20px; text-align: center; font-size: 14px; }
+        .sidebar-link:hover { background-color: #2f2820; color: #DCA773; transform: translateX(5px); }
+        .sidebar-link.active { background: linear-gradient(90deg, #DCA773, #c89360); color: #0f0e0c; font-weight: 800; box-shadow: 0 4px 15px rgba(220, 167, 115, 0.3); }
+        .sidebar-link i { width: 22px; text-align: center; font-size: 15px; }
 
-        /* Topbar */
-        .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+        /* Topbar (En-tête) */
+        .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; width: 100%; }
         .app-topbar {
-            height: 64px; background-color: #181614; border-bottom: 1px solid #2f2820;
+            height: 70px; background-color: rgba(24, 22, 20, 0.8); backdrop-filter: blur(12px);
+            border-bottom: 1px solid #2f2820;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; flex-shrink: 0; z-index: 40;
+            padding: 0 24px; flex-shrink: 0; z-index: 50;
+            position: sticky; top: 0;
         }
-        .app-content { flex: 1; overflow-y: auto; padding: 24px; background-color: #0f0e0c; }
-
-        /* Overlay Mobile */
+        
+        /* Contenu principal fluide */
+        .app-content { flex: 1; overflow-y: auto; padding: 30px; background-color: #0f0e0c; scroll-behavior: smooth; }
+        
+        /* Overlay (Fond flouté quand le menu est ouvert) */
         .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-            z-index: 45; display: none; transition: opacity 0.3s;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
         }
-        .sidebar-overlay.visible { display: block; }
+        .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .app-sidebar { position: fixed; left: 0; top: 0; bottom: 0; transform: translateX(-100%); }
-            .app-sidebar.open { transform: translateX(0); }
+        /* Animation d'apparition des cartes */
+        .remal-card, .quick-action-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .quick-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 167, 115, 0.15);
+            border-color: rgba(220, 167, 115, 0.5);
         }
 
-        /* Tes styles PDF et impression existants */
+        /* Boutons Header personnalisés */
+        .header-action-btn { 
+            display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 12px; 
+            background-color: #0f0e0c; border: 1px solid #2f2820; 
+            color: #a8a29e; transition: all 0.2s; cursor: pointer;
+        }
+        .header-action-btn:hover { color: #DCA773; border-color: #DCA773; background-color: #181614; }
+        
+        /* Styles PDF et impression existants */
         @media print {
             body.printing-linen > *:not(#linenPrintModal) { display: none !important; }
-            body.printing-linen #linenPrintModal {
-                position: static !important; background: white !important; padding: 0 !important;
-                display: block !important; overflow: visible !important;
-            }
+            body.printing-linen #linenPrintModal { position: static !important; background: white !important; padding: 0 !important; display: block !important; overflow: visible !important; }
             body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
-            body.printing-linen #linenPrintArea {
-                width: 100% !important; max-width: 100% !important; border: none !important;
-                box-shadow: none !important; margin: 0 !important; padding: 0 !important;
-            }
+            body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
-        <style>
-    /* On garde tes styles existants pour le corps et les cartes */
-    #bodyRoot {
-        overflow-x: hidden !important;
-    }
-    body.role-staff [data-admin-only="true"] {
-        display: none !important;
-    }
-
-    /* Nouvelles classes pour l'interface avec Sidebar fluide */
-    .app-layout { display: flex; height: 100vh; overflow: hidden; position: relative; }
-    
-    /* Sidebar - Cachée par défaut sur PC, s'ouvre en glissant */
-    .app-sidebar {
-        width: 280px; background-color: #181614; border-right: 1px solid #2f2820;
-        display: flex; flex-direction: column; flex-shrink: 0;
-        position: fixed; left: 0; top: 0; bottom: 0;
-        transform: translateX(-100%); /* Caché par défaut */
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Animation fluide */
-        z-index: 100; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-    }
-    .app-sidebar.open { transform: translateX(0); }
-
-    .sidebar-link {
-        display: flex; align-items: center; gap: 12px; padding: 12px 18px; margin: 4px 12px;
-        border-radius: 12px; color: #a8a29e; font-weight: 600; font-size: 13px;
-        text-decoration: none; transition: all 0.3s ease;
-    }
-    .sidebar-link:hover { background-color: #2f2820; color: #DCA773; transform: translateX(5px); }
-    .sidebar-link.active { background: linear-gradient(90deg, #DCA773, #c89360); color: #0f0e0c; font-weight: 800; box-shadow: 0 4px 15px rgba(220, 167, 115, 0.3); }
-    .sidebar-link i { width: 22px; text-align: center; font-size: 15px; }
-
-    /* Topbar (En-tête) */
-    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; width: 100%; }
-    .app-topbar {
-        height: 70px; background-color: rgba(24, 22, 20, 0.8); backdrop-filter: blur(12px);
-        border-bottom: 1px solid #2f2820;
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 0 24px; flex-shrink: 0; z-index: 50;
-        position: sticky; top: 0;
-    }
-    
-    /* Contenu principal fluide */
-    .app-content { flex: 1; overflow-y: auto; padding: 30px; background-color: #0f0e0c; scroll-behavior: smooth; }
-    
-    /* Overlay (Fond flouté quand le menu est ouvert) */
-    .sidebar-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-        z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-    }
-    .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
-
-    /* Animation d'apparition des cartes */
-    .remal-card, .quick-action-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    .quick-action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(220, 167, 115, 0.15);
-        border-color: rgba(220, 167, 115, 0.5);
-    }
-
-    /* Boutons Header personnalisés */
-    .header-action-btn { 
-        display: flex; align-items: center; justify-content: center;
-        width: 40px; height: 40px; border-radius: 12px; 
-        background-color: #0f0e0c; border: 1px solid #2f2820; 
-        color: #a8a29e; transition: all 0.2s; cursor: pointer;
-    }
-    .header-action-btn:hover { color: #DCA773; border-color: #DCA773; background-color: #181614; }
-    
-    /* Styles PDF et impression existants */
-    @media print {
-        body.printing-linen > *:not(#linenPrintModal) { display: none !important; }
-        body.printing-linen #linenPrintModal { position: static !important; background: white !important; padding: 0 !important; display: block !important; overflow: visible !important; }
-        body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
-        body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
-    }
-</style><style>
-    /* On garde tes styles existants pour le corps et les cartes */
-    #bodyRoot {
-        overflow-x: hidden !important;
-    }
-    body.role-staff [data-admin-only="true"] {
-        display: none !important;
-    }
-
-    /* Nouvelles classes pour l'interface avec Sidebar fluide */
-    .app-layout { display: flex; height: 100vh; overflow: hidden; position: relative; }
-    
-    /* Sidebar - Cachée par défaut sur PC, s'ouvre en glissant */
-    .app-sidebar {
-        width: 280px; background-color: #181614; border-right: 1px solid #2f2820;
-        display: flex; flex-direction: column; flex-shrink: 0;
-        position: fixed; left: 0; top: 0; bottom: 0;
-        transform: translateX(-100%); /* Caché par défaut */
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Animation fluide */
-        z-index: 100; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-    }
-    .app-sidebar.open { transform: translateX(0); }
-
-    .sidebar-link {
-        display: flex; align-items: center; gap: 12px; padding: 12px 18px; margin: 4px 12px;
-        border-radius: 12px; color: #a8a29e; font-weight: 600; font-size: 13px;
-        text-decoration: none; transition: all 0.3s ease;
-    }
-    .sidebar-link:hover { background-color: #2f2820; color: #DCA773; transform: translateX(5px); }
-    .sidebar-link.active { background: linear-gradient(90deg, #DCA773, #c89360); color: #0f0e0c; font-weight: 800; box-shadow: 0 4px 15px rgba(220, 167, 115, 0.3); }
-    .sidebar-link i { width: 22px; text-align: center; font-size: 15px; }
-
-    /* Topbar (En-tête) */
-    .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; width: 100%; }
-    .app-topbar {
-        height: 70px; background-color: rgba(24, 22, 20, 0.8); backdrop-filter: blur(12px);
-        border-bottom: 1px solid #2f2820;
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 0 24px; flex-shrink: 0; z-index: 50;
-        position: sticky; top: 0;
-    }
-    
-    /* Contenu principal fluide */
-    .app-content { flex: 1; overflow-y: auto; padding: 30px; background-color: #0f0e0c; scroll-behavior: smooth; }
-    
-    /* Overlay (Fond flouté quand le menu est ouvert) */
-    .sidebar-overlay {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-        z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-    }
-    .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
-
-    /* Animation d'apparition des cartes */
-    .remal-card, .quick-action-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-    .quick-action-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(220, 167, 115, 0.15);
-        border-color: rgba(220, 167, 115, 0.5);
-    }
-
-    /* Boutons Header personnalisés */
-    .header-action-btn { 
-        display: flex; align-items: center; justify-content: center;
-        width: 40px; height: 40px; border-radius: 12px; 
-        background-color: #0f0e0c; border: 1px solid #2f2820; 
-        color: #a8a29e; transition: all 0.2s; cursor: pointer;
-    }
-    .header-action-btn:hover { color: #DCA773; border-color: #DCA773; background-color: #181614; }
-    
-    /* Styles PDF et impression existants */
-    @media print {
-        body.printing-linen > *:not(#linenPrintModal) { display: none !important; }
-        body.printing-linen #linenPrintModal { position: static !important; background: white !important; padding: 0 !important; display: block !important; overflow: visible !important; }
-        body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
-        body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
-    }
-</style>
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
@@ -276,64 +135,60 @@
 <!-- ═══ APP LAYOUT ═══ -->
 <div class="app-layout">
 
-    <!-- ═══ SIDEBAR ═══ -->
+    <!-- ═══ SIDEBAR (Cachée par défaut) ═══ -->
     <aside id="appSidebar" class="app-sidebar">
         <!-- Logo -->
-        <div class="p-5 border-b border-[#2f2820] flex items-center gap-3 cursor-pointer" onclick="switchMainSection('liveRecord')">
+        <div class="p-6 border-b border-[#2f2820] flex items-center gap-3 cursor-pointer" onclick="switchMainSection('liveRecord'); toggleAppSidebar();">
             <img src="assets/remal-logo.png" alt="Remal" class="h-10 w-auto object-contain">
             <div>
-                <h1 class="font-serif-luxury text-lg text-[#DCA773] font-bold tracking-widest leading-none">REMAL</h1>
-                <p class="text-[9px] text-stone-400 uppercase tracking-widest mt-1">Laundry OS</p>
+                <h1 class="font-serif-luxury text-xl text-[#DCA773] font-bold tracking-widest leading-none">REMAL</h1>
+                <p class="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Laundry OS</p>
             </div>
         </div>
 
         <!-- Navigation -->
-        <nav class="flex-1 overflow-y-auto py-3 space-y-1">
-            <a href="#" onclick="switchMainSection('liveRecord')" id="navBtnLiveRecord" class="sidebar-link active">
+        <nav class="flex-1 overflow-y-auto py-4 space-y-1">
+            <a href="#" onclick="switchMainSection('liveRecord'); toggleAppSidebar();" id="navBtnLiveRecord" class="sidebar-link active">
                 <i class="fas fa-bed"></i> <span>Active Rooms</span>
             </a>
-            <a href="#" onclick="switchMainSection('spa')" id="navBtnSpa" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('spa'); toggleAppSidebar();" id="navBtnSpa" class="sidebar-link">
                 <i class="fas fa-spa"></i> <span>SPA</span>
             </a>
-            <a href="#" onclick="ouvrirModalActiveRoomsList()" class="sidebar-link">
+            <a href="#" onclick="ouvrirModalActiveRoomsList(); toggleAppSidebar();" class="sidebar-link">
                 <i class="fas fa-list-ol"></i> <span>Active Rooms List</span>
             </a>
             
             <!-- Liens Admin -->
-            <div class="px-4 pt-4 pb-1 text-[10px] font-bold text-stone-500 uppercase tracking-wider" data-admin-only="true">Admin Modules</div>
-            <a href="#" onclick="switchMainSection('checkout')" id="navBtnCheckout" data-admin-only="true" class="sidebar-link">
+            <div class="px-5 pt-5 pb-2 text-[10px] font-bold text-stone-500 uppercase tracking-wider" data-admin-only="true">Admin Modules</div>
+            <a href="#" onclick="switchMainSection('checkout'); toggleAppSidebar();" id="navBtnCheckout" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-suitcase-rolling"></i> <span>Check-Out</span>
             </a>
-            <a href="#" onclick="switchMainSection('stock')" id="navBtnStock" data-admin-only="true" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('stock'); toggleAppSidebar();" id="navBtnStock" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-boxes-stacked"></i> <span>Stock</span>
             </a>
-            <a href="#" onclick="switchMainSection('linenControl')" id="navBtnLinenControl" data-admin-only="true" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('linenControl'); toggleAppSidebar();" id="navBtnLinenControl" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-layer-group"></i> <span>Linen Control</span>
             </a>
-            <a href="#" onclick="switchMainSection('lostfound')" id="navBtnLostfound" data-admin-only="true" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('lostfound'); toggleAppSidebar();" id="navBtnLostfound" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-box-open"></i> <span>Lost & Found</span>
             </a>
-            <a href="#" onclick="switchMainSection('pdfList')" id="navBtnPdfList" data-admin-only="true" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('pdfList'); toggleAppSidebar();" id="navBtnPdfList" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-archive"></i> <span>Archives</span>
             </a>
-            <a href="#" onclick="switchMainSection('dashboard')" id="navBtnDashboard" data-admin-only="true" class="sidebar-link">
+            <a href="#" onclick="switchMainSection('dashboard'); toggleAppSidebar();" id="navBtnDashboard" data-admin-only="true" class="sidebar-link">
                 <i class="fas fa-chart-line"></i> <span>Chart</span>
-            </a>
-            <a href="#" onclick="switchMainSection('adminChat')" id="navBtnAdminChat" data-admin-only="true" class="sidebar-link relative">
-                <i class="fas fa-comments"></i> <span>Chat</span>
-                <span id="navChatBadge" class="hidden absolute right-2 top-2 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
             </a>
         </nav>
 
         <!-- User / Logout -->
-        <div class="p-4 border-t border-[#2f2820]">
-            <div class="flex items-center gap-3 p-2 rounded-xl bg-[#0f0e0c] border border-[#2f2820] cursor-pointer hover:border-[#DCA773] transition" onclick="confirmLogout()">
-                <div class="w-8 h-8 rounded-full bg-[#DCA773] text-[#0f0e0c] flex items-center justify-center font-black text-xs" id="roleBadgeIconSidebar">A</div>
+        <div class="p-5 border-t border-[#2f2820]">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#0f0e0c] border border-[#2f2820] cursor-pointer hover:border-[#DCA773] transition" onclick="confirmLogout()">
+                <div class="w-10 h-10 rounded-full bg-[#DCA773] text-[#0f0e0c] flex items-center justify-center font-black text-sm" id="roleBadgeIconSidebar">A</div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-white truncate" id="roleBadgeNameSidebar">---</p>
-                    <p class="text-[10px] text-stone-400" id="roleBadgeRoleSidebar">Staff</p>
+                    <p class="text-sm font-bold text-white truncate" id="roleBadgeNameSidebar">---</p>
+                    <p class="text-xs text-stone-400" id="roleBadgeRoleSidebar">Staff</p>
                 </div>
-                <i class="fas fa-sign-out-alt text-stone-500 text-xs"></i>
+                <i class="fas fa-sign-out-alt text-stone-500 text-sm"></i>
             </div>
         </div>
     </aside>
@@ -346,14 +201,21 @@
         
         <!-- Topbar -->
         <header class="app-topbar no-print">
+            <!-- Partie Gauche : Menu + Logo + Indicateurs -->
             <div class="flex items-center gap-4">
-                <!-- Bouton Menu Mobile -->
-                <button onclick="toggleAppSidebar()" class="lg:hidden text-[#DCA773] hover:text-white p-2">
-                    <i class="fas fa-bars text-xl"></i>
+                <!-- Bouton Menu (Toujours visible) -->
+                <button onclick="toggleAppSidebar()" class="header-action-btn" title="Menu">
+                    <i class="fas fa-bars text-lg"></i>
                 </button>
 
+                <!-- Logo Mini -->
+                <div class="flex items-center gap-2 cursor-pointer" onclick="switchMainSection('liveRecord')">
+                    <img src="assets/remal-logo.png" alt="Remal" class="h-8 w-auto object-contain">
+                    <h1 class="font-serif-luxury text-lg text-[#DCA773] font-bold tracking-widest leading-none hidden sm:block">REMAL</h1>
+                </div>
+
                 <!-- Indicateurs (Sync + Occupancy) -->
-                <div class="hidden md:flex items-center gap-2">
+                <div class="hidden md:flex items-center gap-2 ml-2">
                     <div class="inline-flex items-center gap-2 text-[11px] text-amber-400/90 font-medium bg-[#0f0e0c] px-3 py-1.5 rounded-full border border-[#2f2820]">
                         <span>🕒 PMS:</span>
                         <span id="lastUpdateHeaderDisplay" class="font-bold text-emerald-400">Never</span>
@@ -366,9 +228,15 @@
                 </div>
             </div>
 
-            <!-- Actions Header -->
+            <!-- Partie Droite : Chat + Langue + Thème + Logout -->
             <div class="flex items-center gap-2">
                 <div id="headerAdminContainer"></div>
+
+                <!-- Bouton Chat Global (avec pastille) -->
+                <button onclick="switchMainSection('adminChat')" class="header-action-btn relative" title="Chat">
+                    <i class="fas fa-comments"></i>
+                    <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
+                </button>
 
                 <!-- Sélecteur de langue -->
                 <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
@@ -382,13 +250,8 @@
                     <i class="fas fa-moon" id="themeIcon"></i>
                 </button>
 
-                <!-- Menu Mobile (⋯) pour le Staff -->
-                <button onclick="toggleStaffMobileMenu()" class="header-action-btn menu-trigger-btn lg:hidden" title="Menu">
-                    <i class="fas fa-ellipsis-vertical"></i>
-                </button>
-
                 <!-- Logout (Desktop) -->
-                <button onclick="confirmLogout()" class="header-action-btn danger hidden lg:flex" title="Logout">
+                <button onclick="confirmLogout()" class="header-action-btn hidden lg:flex" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
@@ -2023,17 +1886,6 @@ window.addEventListener('load', async () => {
                     `;
                 }
 
-                // 2. Injection dans le menu ⋯ (Mobile)
-                const mobileContainer = document.getElementById('mobileAdminContainer');
-                if (mobileContainer) {
-                    mobileContainer.innerHTML = `
-                        <button class="staff-mobile-menu-item" onclick="switchMainSection('massEntry'); closeStaffMobileMenu();">
-                            <i class="fas fa-file-import"></i>
-                            <span>Mass PDF Import</span>
-                        </button>
-                    `;
-                }
-                
                 console.log('✅ [Sécurité] Boutons Mass PDF injectés (Admin).');
             } else {
                 console.log('🛡️ [Sécurité] Staff détecté : Boutons Mass PDF non générés.');
@@ -2059,6 +1911,23 @@ window.__adminChatSend = async function () {
     }
 };
 </script>
+
+<!-- 🎬 GESTION DE LA SIDEBAR FLUIDE -->
+<script>
+    function toggleAppSidebar() {
+        const sidebar = document.getElementById('appSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        if (sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        } else {
+            sidebar.classList.add('open');
+            overlay.classList.add('visible');
+        }
+    }
+</script>
+
     <script>
     setTimeout(() => {
         if (typeof initApp === 'function') {
