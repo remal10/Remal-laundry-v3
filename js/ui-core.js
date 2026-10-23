@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-// REMAL LAUNDRY OS — UI CORE
+// REMAL LAUNDRY OS — UI CORE (Version corrigée)
 // Setup, détection appareil, session staff, thème, initialisation
 // ⚠️ DOIT ÊTRE CHARGÉ EN DERNIER
 // ═══════════════════════════════════════════════════════════════════
@@ -179,10 +179,10 @@ function toggleTheme() {
     const isLight = body.classList.contains('light-mode');
     
     if (isLight) {
-        icon.className = 'fas fa-sun';
+        if (icon) icon.className = 'fas fa-sun';
         localStorage.setItem('remal_theme', 'light');
     } else {
-        icon.className = 'fas fa-moon';
+        if (icon) icon.className = 'fas fa-moon';
         localStorage.setItem('remal_theme', 'dark');
     }
 }
@@ -319,86 +319,12 @@ async function initApp() {
 window.initApp = initApp; // On l'expose globalement
 
 // ═══════════════════════════════════════════════════════════════════
-// ✨ SPRINT 1.5 — MENU MOBILE STAFF (⋯)
+// ✨ MENU MOBILE (3 POINTS) - LOGIQUE SIMPLIFIÉE
 // ═══════════════════════════════════════════════════════════════════
-
-function toggleStaffMobileMenu() {
-    const menu = document.getElementById('staffMobileMenu');
-    const overlay = document.getElementById('staffMobileMenuOverlay');
-    if (!menu || !overlay) return;
-
-    const isVisible = menu.classList.contains('visible');
-
-    if (isVisible) {
-        closeStaffMobileMenu();
-    } else {
-        menu.classList.add('visible');
-        overlay.classList.add('visible');
-        updateStaffMobileMenuState();
-    }
-}
-
-function closeStaffMobileMenu() {
-    const menu = document.getElementById('staffMobileMenu');
-    const overlay = document.getElementById('staffMobileMenuOverlay');
-    if (menu) menu.classList.remove('visible');
-    if (overlay) overlay.classList.remove('visible');
-}
-
-function updateStaffMobileMenuState() {
-    const menuIcon = document.getElementById('menuThemeIcon');
-    if (menuIcon) {
-        menuIcon.className = document.body.classList.contains('light-mode') 
-            ? 'fas fa-sun' 
-            : 'fas fa-moon';
-    }
-
-    const langBadge = document.getElementById('menuLangBadge');
-    if (langBadge) {
-        const lang = (typeof currentLang !== 'undefined' && currentLang) ? currentLang.toUpperCase() : 'EN';
-        langBadge.textContent = lang;
-    }
-}
-
-function cycleLanguage() {
-    const langs = ['en', 'ar', 'hi'];
-    const current = (typeof currentLang !== 'undefined' && currentLang) ? currentLang : 'en';
-    const idx = langs.indexOf(current);
-    const next = langs[(idx + 1) % langs.length];
-    
-    if (typeof setLang === 'function') setLang(next);
-    
-    const langBadge = document.getElementById('menuLangBadge');
-    if (langBadge) langBadge.textContent = next.toUpperCase();
-    
-    if (navigator.vibrate) navigator.vibrate(10);
-}
-
-window.toggleStaffMobileMenu = toggleStaffMobileMenu;
-window.closeStaffMobileMenu = closeStaffMobileMenu;
-window.updateStaffMobileMenuState = updateStaffMobileMenuState;
-window.cycleLanguage = cycleLanguage;
-
-document.addEventListener('click', (e) => {
-    const menu = document.getElementById('staffMobileMenu');
-    const trigger = document.querySelector('.menu-trigger-btn');
-    if (!menu || !trigger) return;
-    if (!menu.contains(e.target) && !trigger.contains(e.target)) {
-        closeStaffMobileMenu();
-    }
-});
-
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeStaffMobileMenu();
-});
-
-const originalToggleTheme = window.toggleTheme;
-if (typeof originalToggleTheme === 'function') {
-    window.toggleTheme = function() {
-        originalToggleTheme.apply(this, arguments);
-        setTimeout(updateStaffMobileMenuState, 100);
-    };
-}
+// L'ancien système (staffMobileMenu) a été désactivé. 
+// Désormais, le bouton et son menu sont gérés directement dans le HTML
+// via la fonction onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')"
+// Nous n'avons plus besoin d'écouter les clics ici.
 
 // ═══════════════════════════════════════════════════════════════════
 // SUPERVISOR — Status Change Logger
