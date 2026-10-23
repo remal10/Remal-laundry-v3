@@ -165,55 +165,16 @@
             body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
             body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
-        /* --- CORRECTION POUR LES 3 POINTS ET LA BARRE MOBILE --- */
-@media (max-width: 768px) {
-    /* Sur Mobile : on cache les boutons PC et la barre Select */
-    .desktop-only-flex { display: none !important; }
-    .status-btn-bar { display: none !important; }
-    /* Sur Mobile : on force l'affichage des 3 points */
-    .mobile-only-menu { display: block !important; }
-}
-
-@media (min-width: 769px) {
-    /* Sur PC : on cache les 3 points */
-    .mobile-only-menu { display: none !important; }
-    /* Sur PC : on affiche les boutons et la barre Select */
-    .desktop-only-flex { display: flex !important; }
-    .status-btn-bar { display: flex !important; }
-}
-        /* --- CORRECTION FINALE 3 POINTS ET BARRE MOBILE --- */
-@media (max-width: 768px) {
-    .status-btn-bar { display: none !important; }
-    .desktop-only-flex { display: none !important; }
-    .mobile-only-menu { display: block !important; }
-}
-@media (min-width: 769px) {
-    .mobile-only-menu { display: none !important; }
-    .desktop-only-flex { display: flex !important; }
-    .status-btn-bar { display: flex !important; }
-}
-        /* --- FORCE L'AFFICHAGE DU BOUTON 3 POINTS ET CACHE LA BARRE --- */
-@media (max-width: 768px) {
-    /* Cache les boutons PC */
-    .desktop-only-flex { display: none !important; }
-    
-    /* Cache totalement la barre Select/Delete sur mobile */
-    .status-btn-bar { display: none !important; visibility: hidden !important; height: 0 !important; overflow: hidden !important; }
-    
-    /* Force l'affichage des 3 points sur mobile */
-    .mobile-only-menu { display: block !important; visibility: visible !important; opacity: 1 !important; }
-    
-    /* Force l'affichage du bouton lui-même au cas où le script le cible */
-    .mobile-only-menu button { display: flex !important; visibility: visible !important; }
-}
-
-@media (min-width: 769px) {
-    /* Sur PC, on cache les 3 points */
-    .mobile-only-menu { display: none !important; }
-    /* Sur PC, on affiche les boutons et la barre Select */
-    .desktop-only-flex { display: flex !important; }
-    .status-btn-bar { display: flex !important; visibility: visible !important; height: auto !important; }
-}
+<style>
+    /* --- CORRECTION MOBILE (PC INTACT) --- */
+    @media (max-width: 1024px) {
+        /* On cache la barre Select et les boutons PC */
+        .status-btn-bar { display: none !important; }
+        .desktop-only-flex { display: none !important; }
+        /* On affiche les 3 points */
+        .mobile-only-menu { display: block !important; visibility: visible !important; opacity: 1 !important; }
+    }
+</style>
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
