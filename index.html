@@ -164,6 +164,22 @@
             body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
             body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
+        /* --- CORRECTION POUR LES 3 POINTS ET LA BARRE MOBILE --- */
+@media (max-width: 768px) {
+    /* Sur Mobile : on cache les boutons PC et la barre Select */
+    .desktop-only-flex { display: none !important; }
+    .status-btn-bar { display: none !important; }
+    /* Sur Mobile : on force l'affichage des 3 points */
+    .mobile-only-menu { display: block !important; }
+}
+
+@media (min-width: 769px) {
+    /* Sur PC : on cache les 3 points */
+    .mobile-only-menu { display: none !important; }
+    /* Sur PC : on affiche les boutons et la barre Select */
+    .desktop-only-flex { display: flex !important; }
+    .status-btn-bar { display: flex !important; }
+}
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
