@@ -28,6 +28,22 @@
     <link rel="stylesheet" href="assets/css/premium-effects.css">
 
     <style>
+        /* --- CORRECTIFS PRIORITAIRES POUR ÉCRASER STYLE.CSS --- */
+        /* Force la disparition de la barre sur mobile */
+        @media (max-width: 768px) {
+            .status-btn-bar { display: none !important; }
+            .desktop-only { display: none !important; }
+            .mobile-only { display: flex !important; }
+            .mobile-only-menu { display: block !important; }
+        }
+        /* Force l'apparition sur PC */
+        @media (min-width: 769px) {
+            .mobile-only { display: none !important; }
+            .mobile-only-menu { display: none !important; }
+            .desktop-only { display: flex !important; }
+            .status-btn-bar { display: flex !important; }
+        }
+
         /* --- BASE ET SÉCURITÉ --- */
         #bodyRoot { overflow-x: hidden !important; }
         body.role-staff [data-admin-only="true"] { display: none !important; }
@@ -128,13 +144,6 @@
         .s-ready:hover { background: #10b981; color: #fff; }
         .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
         .s-delivered:hover { background: #8b5cf6; color: #fff; }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .app-content { padding: 16px; }
-            .remal-card { padding: 16px !important; }
-            #liveOrdersList { grid-template-columns: 1fr; gap: 12px; }
-        }
 
         /* --- MODE CLAIR --- */
         body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
@@ -271,7 +280,7 @@
                 </button>
 
                 <!-- Boutons Desktop -->
-                <div class="hidden md:flex items-center gap-2">
+                <div class="desktop-only items-center gap-2">
                     <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
@@ -286,7 +295,7 @@
                 </div>
 
                 <!-- Menu 3 points (Mobile) -->
-                <div class="flex md:hidden relative">
+                <div class="mobile-only-menu relative">
                     <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
@@ -554,7 +563,7 @@
                         </button>
                         
                         <!-- Bouton SPA (Uniquement sur Mobile grâce à la classe mobile-only-btn) -->
-                        <button onclick="switchMainSection('spa')" class="mobile-only-btn flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
+                        <button onclick="switchMainSection('spa')" class="mobile-only flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
                             <i class="fas fa-spa text-[#DCA773]"></i>
                             <span>SPA</span>
                         </button>
@@ -577,7 +586,7 @@
                 </div>
 
                 <!-- Barre d'actions : Select, Delete, Set Status (Cachée sur mobile) -->
-                <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
+                <div class="status-btn-bar hidden md:flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
                     <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
                         <span class="text-emerald-400">☑</span> SELECT ALL
                     </button>
@@ -2024,4 +2033,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-</html>
+    </html>
