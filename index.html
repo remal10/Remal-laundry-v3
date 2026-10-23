@@ -26,22 +26,18 @@
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="assets/css/premium-effects.css">
-    <style id="force-fix">@media (max-width: 768px) { .status-btn-bar { display: none !important; } .mobile-only-menu { display: block !important; } } @media (min-width: 769px) { .mobile-only-menu { display: none !important; } .status-btn-bar { display: flex !important; } }</style>
 
     <style>
-        /* --- CORRECTIFS PRIORITAIRES POUR ÉCRASER STYLE.CSS --- */
-        /* Force la disparition de la barre sur mobile */
-        @media (max-width: 768px) {
-            .status-btn-bar { display: none !important; }
-            .desktop-only { display: none !important; }
-            .mobile-only { display: flex !important; }
-            .mobile-only-menu { display: block !important; }
-        }
-        /* Force l'apparition sur PC */
-        @media (min-width: 769px) {
-            .mobile-only { display: none !important; }
+        /* --- CORRECTION FINALE POUR MOBILE ET PC --- */
+        /* Par défaut (Mobile) : on cache les boutons PC et on montre les 3 points */
+        .desktop-only-flex { display: none !important; }
+        .mobile-only-menu { display: block !important; }
+        .status-btn-bar { display: none !important; }
+
+        /* Si l'écran est large (PC), on inverse */
+        @media (min-width: 1025px) {
+            .desktop-only-flex { display: flex !important; }
             .mobile-only-menu { display: none !important; }
-            .desktop-only { display: flex !important; }
             .status-btn-bar { display: flex !important; }
         }
 
@@ -118,6 +114,10 @@
         .quick-action-label { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: #fff; }
         .quick-action-sub { font-size: 11px; color: #a8a29e; }
 
+        /* Profil Staff dans la Sidebar */
+        #roleBadgeNameSidebar { font-size: 14px; font-weight: 600; color: #fff; }
+        #roleBadgeRoleSidebar { font-size: 11px; color: #a8a29e; text-transform: capitalize; }
+
         /* --- MENU DÉROULANT DES STATUTS --- */
         .status-dropdown { position: relative; display: inline-block; }
         .status-menu {
@@ -165,16 +165,6 @@
             body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
             body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
         }
-<style>
-    /* --- CORRECTION MOBILE (PC INTACT) --- */
-    @media (max-width: 1024px) {
-        /* On cache la barre Select et les boutons PC */
-        .status-btn-bar { display: none !important; }
-        .desktop-only-flex { display: none !important; }
-        /* On affiche les 3 points */
-        .mobile-only-menu { display: block !important; visibility: visible !important; opacity: 1 !important; }
-    }
-</style>
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
@@ -290,38 +280,38 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-<!-- Boutons Desktop (Cachés sur mobile) -->
-<div class="desktop-only-flex items-center gap-2">
-    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
-        <i class="fas fa-moon" id="themeIcon"></i>
-    </button>
-    <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
-        <option value="en">EN</option>
-        <option value="ar">AR</option>
-        <option value="hi">HI</option>
-    </select>
-    <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
-        <i class="fas fa-sign-out-alt"></i>
-    </button>
-</div>
+                <!-- Boutons Desktop -->
+                <div class="desktop-only-flex items-center gap-2">
+                    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
+                        <option value="en">EN</option>
+                        <option value="ar">AR</option>
+                        <option value="hi">HI</option>
+                    </select>
+                    <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
 
-<!-- Menu 3 points (Visible uniquement sur Mobile) -->
-<div class="mobile-only-menu relative">
-    <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
-        <i class="fas fa-ellipsis-vertical"></i>
-    </button>
-    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-[100] flex flex-col gap-1">
-        <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
-            <i class="fas fa-moon text-[#DCA773]"></i> Theme
-        </button>
-        <button onclick="setLang('ar'); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
-            <i class="fas fa-globe text-[#DCA773]"></i> Language
-        </button>
-        <button onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-[#2f2820] rounded-lg">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-    </div>
-</div>
+                <!-- Menu 3 points (Mobile) -->
+                <div class="mobile-only-menu relative">
+                    <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-[100] flex flex-col gap-1">
+                        <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-moon text-[#DCA773]"></i> Theme
+                        </button>
+                        <button onclick="setLang('ar'); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-globe text-[#DCA773]"></i> Language
+                        </button>
+                        <button onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -574,7 +564,7 @@
                         </button>
                         
                         <!-- Bouton SPA (Uniquement sur Mobile grâce à la classe mobile-only-btn) -->
-                        <button onclick="switchMainSection('spa')" class="mobile-only flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
+                        <button onclick="switchMainSection('spa')" class="mobile-only-btn flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
                             <i class="fas fa-spa text-[#DCA773]"></i>
                             <span>SPA</span>
                         </button>
@@ -595,6 +585,33 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Barre d'actions : Select, Delete, Set Status -->
+                <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
+                    <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                        <span class="text-emerald-400">☑</span> SELECT ALL
+                    </button>
+                    <button onclick="deselectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                        <span class="text-rose-400">✖</span> DESELECT
+                    </button>
+                    <button onclick="deleteSelectedRooms()" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-200 border border-rose-800 font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                        <span>🗑️</span> DELETE
+                    </button>
+
+                    <!-- Menu Déroulant des Statuts -->
+                    <div class="status-dropdown ml-auto">
+                        <button class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                            SET STATUS <span class="text-[#DCA773] text-[10px]">▼</span>
+                        </button>
+                        <div class="status-menu">
+                            <button onclick="setStatusForSelected('collected')" class="status-menu-item s-collected"><i class="fas fa-box"></i> COLLECTED</button>
+                            <button onclick="setStatusForSelected('washing')" class="status-menu-item s-washing"><i class="fas fa-soap"></i> WASHING</button>
+                            <button onclick="setStatusForSelected('ready')" class="status-menu-item s-ready"><i class="fas fa-check-circle"></i> READY</button>
+                            <button onclick="setStatusForSelected('delivered')" class="status-menu-item s-delivered"><i class="fas fa-truck"></i> DELIVERED</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Grille des chambres -->
                 <div id="liveOrdersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
                     <p class="text-xs text-stone-500 text-center py-6 col-span-full">Loading active rooms...</p>
