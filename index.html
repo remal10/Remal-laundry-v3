@@ -101,13 +101,6 @@
         .quick-action-label { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: #fff; }
         .quick-action-sub { font-size: 11px; color: #a8a29e; }
 
-        /* --- AMÉLIORATION MOBILE (ACTIVE ROOMS / STAFF) --- */
-        @media (max-width: 768px) {
-            .app-content { padding: 16px; }
-            .remal-card { padding: 16px !important; }
-            #liveOrdersList { grid-template-columns: 1fr; gap: 12px; }
-        }
-
         /* Profil Staff dans la Sidebar */
         #roleBadgeNameSidebar { font-size: 14px; font-weight: 600; color: #fff; }
         #roleBadgeRoleSidebar { font-size: 11px; color: #a8a29e; text-transform: capitalize; }
@@ -140,16 +133,22 @@
         .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
         .s-delivered:hover { background: #8b5cf6; color: #fff; }
 
-        /* Cacher sur PC, visible sur Mobile */
-        .mobile-only-btn { display: none !important; }
-        @media (max-width: 768px) { .mobile-only-btn { display: flex !important; } }
+        /* --- GESTION MOBILE (CACHER LA BARRE SUR MOBILE) --- */
+        @media (max-width: 768px) {
+            .app-content { padding: 16px; }
+            .remal-card { padding: 16px !important; }
+            #liveOrdersList { grid-template-columns: 1fr; gap: 12px; }
+            
+            /* Cacher la barre d'actions Select/Delete sur Mobile */
+            .status-btn-bar { display: none !important; }
+        }
 
         /* --- MODE CLAIR (UNIFORMISÉ) --- */
         body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
         body.light-mode .app-topbar { background-color: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #e5e7eb !important; }
         body.light-mode .app-sidebar { background-color: #ffffff !important; border-right: 1px solid #e5e7eb !important; }
         body.light-mode .app-content { background-color: #f3f4f6 !important; }
-        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div, body.light-mode .status-btn-bar { 
+        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div { 
             background-color: #ffffff !important; border-color: #e5e7eb !important; color: #1f2937 !important; 
         }
         body.light-mode .text-stone-200, body.light-mode .text-stone-300, body.light-mode .text-stone-400 { color: #4b5563 !important; }
@@ -297,22 +296,39 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Toggle Theme -->
-                <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </button>
+                <!-- Boutons Desktop (Cachés sur mobile) -->
+                <div class="hidden md:flex items-center gap-2">
+                    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
+                        <option value="en">EN</option>
+                        <option value="ar">AR</option>
+                        <option value="hi">HI</option>
+                    </select>
+                    <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
 
-                <!-- Sélecteur de langue -->
-                <select id="langSelect" onchange="setLang(this.value)" class="header-action-btn hidden sm:flex" style="padding: 0 8px; width: auto; min-width: 50px; font-size: 11px;">
-                    <option value="en">EN</option>
-                    <option value="ar">AR</option>
-                    <option value="hi">HI</option>
-                </select>
-
-                <!-- Logout -->
-                <button onclick="confirmLogout()" class="header-action-btn" title="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
+                <!-- Menu 3 points (Mobile uniquement) -->
+                <div class="md:hidden relative">
+                    <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                    <!-- Menu déroulant des 3 points -->
+                    <div id="mobileMenuOptions" class="hidden absolute right-0 top-full mt-2 bg-[#181614] border border-[#2f2820] rounded-xl shadow-2xl p-2 w-40 z-50 flex flex-col gap-1">
+                        <button onclick="toggleTheme(); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-moon text-[#DCA773]"></i> Theme
+                        </button>
+                        <button onclick="setLang('ar'); document.getElementById('mobileMenuOptions').classList.add('hidden');" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-300 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-globe text-[#DCA773]"></i> Language
+                        </button>
+                        <button onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-[#2f2820] rounded-lg">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -589,21 +605,21 @@
                     </div>
                 </div>
 
-                <!-- Barre d'actions : Select, Delete, Set Status -->
-                <div class="status-btn-bar flex flex-wrap items-center gap-3 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
-                    <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                <!-- Barre d'actions : Select, Delete, Set Status (Cachée sur mobile) -->
+                <div class="status-btn-bar flex flex-wrap items-center gap-2 bg-[#181614] p-3 rounded-2xl border border-[#2f2820] mb-4">
+                    <button onclick="toggleSelectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
                         <span class="text-emerald-400">☑</span> SELECT ALL
                     </button>
-                    <button onclick="deselectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
-                        <span class="text-rose-400">✖</span> DESELECT ALL
+                    <button onclick="deselectAllRooms()" class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                        <span class="text-rose-400">✖</span> DESELECT
                     </button>
-                    <button onclick="deleteSelectedRooms()" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-200 border border-rose-800 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
-                        <span>🗑️</span> DELETE SELECTED
+                    <button onclick="deleteSelectedRooms()" class="bg-rose-950/40 hover:bg-rose-900/60 text-rose-200 border border-rose-800 font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
+                        <span>🗑️</span> DELETE
                     </button>
 
-                    <!-- Le Menu Déroulant des Statuts -->
+                    <!-- Menu Déroulant des Statuts -->
                     <div class="status-dropdown ml-auto">
-                        <button class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition">
+                        <button class="bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-[11px] flex items-center gap-2 transition">
                             SET STATUS <span class="text-[#DCA773] text-[10px]">▼</span>
                         </button>
                         <div class="status-menu">
