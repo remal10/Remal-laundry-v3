@@ -133,24 +133,14 @@
         .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
         .s-delivered:hover { background: #8b5cf6; color: #fff; }
 
-        /* --- GESTION MOBILE (CACHER LA BARRE SELECT SUR MOBILE) --- */
-        .desktop-only-flex { display: flex; }
-        .mobile-only-menu { display: none; }
-
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
             .app-content { padding: 16px; }
             .remal-card { padding: 16px !important; }
             #liveOrdersList { grid-template-columns: 1fr; gap: 12px; }
-            
-            /* Cacher la barre d'actions Select/Delete sur Mobile */
-            .status-btn-bar { display: none !important; }
-            
-            /* Gestion de l'en-tête Mobile */
-            .desktop-only-flex { display: none !important; }
-            .mobile-only-menu { display: block !important; }
         }
 
-        /* --- MODE CLAIR (UNIFORMISÉ) --- */
+        /* --- MODE CLAIR --- */
         body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
         body.light-mode .app-topbar { background-color: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #e5e7eb !important; }
         body.light-mode .app-sidebar { background-color: #ffffff !important; border-right: 1px solid #e5e7eb !important; }
@@ -303,8 +293,8 @@
                     <span id="navChatBadge" class="hidden absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow-lg min-w-[18px] text-center">0</span>
                 </button>
 
-                <!-- Boutons Desktop (Cachés sur mobile via CSS) -->
-                <div class="desktop-only-flex items-center gap-2">
+                <!-- Boutons Desktop -->
+                <div class="hidden md:flex items-center gap-2">
                     <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
@@ -318,8 +308,8 @@
                     </button>
                 </div>
 
-                <!-- Menu 3 points (Mobile uniquement via CSS) -->
-                <div class="mobile-only-menu relative">
+                <!-- Menu 3 points (Mobile uniquement) -->
+                <div class="md:hidden relative">
                     <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
@@ -2060,4 +2050,4 @@ setTimeout(() => {
 }, 500);
 </script>
 </body>
-                </html>
+    </html>
