@@ -1,28 +1,21 @@
 // ═══════════════════════════════════════════════════════════════════
-// REMAL LAUNDRY OS — UI LIVE
+// REMAL LAUNDRY OS — UI LIVE (Version corrigée)
 // Live orders, modals, PDF, statuts, batch
 // ⚠️ Chargé APRÈS ui-forms.js
-// ✅ PLAN B FINAL : 4 boutons directs + Undo toast (10s)
-// Phase 5 : Admin-only controls (Select All / Batch Status / Delete)
-// ✅ BATCH PRINT V2 : Clone #pdfExportArea (même design que la modale)
-// ✅ REFRESH FIX : refreshAllViews() synchronise l'UI instantanément
-// ✅ LINEN FIX : garde-fou switchMainSection + attachLinenFormHandler
-// ✅ STOCK/CHECKOUT FIX : chargement automatique dans switchMainSection
+// ✅ CORRECTION : Alias des fonctions pour le nouveau HTML
+// ✅ CORRECTION : Suppression de l'ancienne barre d'actions générée par JS
 // ═══════════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════════
 // 🎯 REFRESH ALL VISIBLE VIEWS
-// Rafraîchit intelligemment toutes les sections actuellement visibles
 // ═══════════════════════════════════════════════════════════════════
 function refreshAllViews() {
     console.log('🔄 [Refresh] Mise à jour des vues visibles');
 
-    // 1. Active Rooms (Live Orders) — toujours rafraîchi
     if (typeof chargerLiveOrders === 'function') {
         try { chargerLiveOrders(); } catch (e) { console.warn('[Refresh] chargerLiveOrders:', e); }
     }
 
-    // 2. Archives (seulement si visible)
     const archivesSection = document.getElementById('sectionPdfList');
     if (archivesSection && !archivesSection.classList.contains('hidden')) {
         if (typeof afficherListeBordereauxLocal === 'function') {
@@ -30,7 +23,6 @@ function refreshAllViews() {
         }
     }
 
-    // 3. Dashboard (seulement si visible)
     const dashboardSection = document.getElementById('sectionDashboard');
     if (dashboardSection && !dashboardSection.classList.contains('hidden')) {
         if (typeof renderManagementDashboard === 'function') {
@@ -38,12 +30,10 @@ function refreshAllViews() {
         }
     }
 
-    // 4. Checkout Today badge
     if (typeof updateCheckoutTodayBadge === 'function') {
         try { updateCheckoutTodayBadge(); } catch (e) { console.warn('[Refresh] updateCheckoutTodayBadge:', e); }
     }
 
-    // 5. Admin Chat (seulement si visible)
     const chatSection = document.getElementById('sectionAdminChat');
     if (chatSection && !chatSection.classList.contains('hidden')) {
         if (window.AdminChat && typeof window.AdminChat.refreshAll === 'function') {
@@ -51,7 +41,6 @@ function refreshAllViews() {
         }
     }
 
-    // 6. Linen Control (seulement si visible)
     const linenSection = document.getElementById('sectionLinenControl');
     if (linenSection && !linenSection.classList.contains('hidden')) {
         if (typeof loadRecentLinenSheets === 'function') {
@@ -204,8 +193,6 @@ window.onNewGuestRequestReceived = async function(newOrder) {
 
 // ═══════════════════════════════════════════════════════════════════
 // CHARGER LIVE ORDERS
-// ✅ PLAN B FINAL : 4 boutons directs dans la barre de contrôle
-// ✅ Phase 5 : Barre cachée pour les non-admins
 // ═══════════════════════════════════════════════════════════════════
 function chargerLiveOrders() {
     const container = document.getElementById('liveOrdersList');
@@ -251,27 +238,6 @@ function chargerLiveOrders() {
     if (badge) badge.innerText = activeTodaySlips.length;
 
     container.innerHTML = '';
-
-    // Phase 5 — Admin-only controls bar
-    const adminMode = (typeof isAdmin === 'function') ? isAdmin() : false;
-
-    if (adminMode) {
-        const controlsDiv = document.createElement('div');
-        controlsDiv.className = 'col-span-full flex flex-wrap gap-2 mb-2';
-        controlsDiv.innerHTML = `
-            <button onclick="toggleAllSelections(true)" class="luxe-btn luxe-btn-secondary" style="font-size:0.65rem;padding:0.5rem 0.85rem;">✅ Select All</button>
-            <button onclick="toggleAllSelections(false)" class="luxe-btn luxe-btn-ghost" style="font-size:0.65rem;padding:0.5rem 0.85rem;">❌ Deselect All</button>
-            <button onclick="supprimerBordereauxEnLot()" class="luxe-btn" style="font-size:0.65rem;padding:0.5rem 0.85rem;color:#fda4af;border-color:rgba(244,63,94,0.4);background:rgba(244,63,94,0.1);">🗑️ Delete Selected</button>
-            
-            <span class="text-[10px] font-bold text-stone-500 uppercase tracking-wider self-center ml-1">Set Status →</span>
-            
-            <button onclick="appliquerStatutEnLot('Collected')" class="luxe-btn" style="font-size:0.65rem;padding:0.5rem 0.85rem;color:#fcd34d;border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.08);">🧺 Collected</button>
-            <button onclick="appliquerStatutEnLot('Washing')" class="luxe-btn" style="font-size:0.65rem;padding:0.5rem 0.85rem;color:#93c5fd;border-color:rgba(59,130,246,0.4);background:rgba(59,130,246,0.08);">🧼 Washing</button>
-            <button onclick="appliquerStatutEnLot('Ready')" class="luxe-btn" style="font-size:0.65rem;padding:0.5rem 0.85rem;color:#d8b4fe;border-color:rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);">✨ Ready</button>
-            <button onclick="appliquerStatutEnLot('Delivered')" class="luxe-btn" style="font-size:0.65rem;padding:0.5rem 0.85rem;color:#6ee7b7;border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.08);">🚚 Delivered</button>
-        `;
-        container.appendChild(controlsDiv);
-    }
 
     if (activeTodaySlips.length === 0) {
         const emptyMsg = document.createElement('p');
@@ -445,8 +411,13 @@ async function exportActiveRoomsListToPDF() {
 // ═══════════════════════════════════════════════════════════════════
 // SELECTIONS / PRINT
 // ═══════════════════════════════════════════════════════════════════
-function toggleAllSelections(state) {
-    document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = state);
+function toggleSelectAllRooms() {
+    document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = true);
+    updatePrintButtonCount();
+}
+
+function deselectAllRooms() {
+    document.querySelectorAll('.room-checkbox').forEach(cb => cb.checked = false);
     updatePrintButtonCount();
 }
 
@@ -1133,12 +1104,12 @@ async function mettreAJourStatutCommande(requestId, nouveauStatut) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// ✅ PLAN B FINAL : BATCH STATUS — Application directe + Undo 10s
+// ✅ BATCH STATUS
 // ═══════════════════════════════════════════════════════════════════
 const BATCH_UNDO_DURATION = 10000;
 let activeBatchUndo = null;
 
-async function appliquerStatutEnLot(nouveauStatut) {
+async function setStatusForSelected(nouveauStatut) {
     if (typeof requireAdmin === 'function' && !requireAdmin('apply batch status')) return;
     const selectedIds = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => String(cb.dataset.id));
 
@@ -1328,7 +1299,7 @@ async function executerBatchUndo(previousStatuses, toastElement) {
 // ═══════════════════════════════════════════════════════════════════
 // SUPPRESSION EN LOT
 // ═══════════════════════════════════════════════════════════════════
-async function supprimerBordereauxEnLot() {
+async function deleteSelectedRooms() {
     if (typeof requireAdmin === 'function' && !requireAdmin('delete multiple records')) return;
     const selectedIds = Array.from(document.querySelectorAll('.room-checkbox:checked')).map(cb => String(cb.dataset.id));
     
@@ -1387,9 +1358,7 @@ function dismissGuestNotificationBanner() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// 🎯 PATCH GLOBAL — SWITCH SECTION (Linen Control + Admin Chat)
-// ✅ FIX LINEN : garde-fou sectionLinenControl + attachLinenFormHandler
-// ✅ STOCK/CHECKOUT FIX : chargement automatique
+// 🎯 PATCH GLOBAL — SWITCH SECTION
 // ═══════════════════════════════════════════════════════════════════
 (function patchSwitchMainSection() {
     function wrapSwitch() {
@@ -1405,7 +1374,6 @@ function dismissGuestNotificationBanner() {
         window.switchMainSection = function(sectionName) {
             console.log('🔀 [SwitchPatch] Requested section:', sectionName);
 
-            // 1. Cacher TOUTES les sections (y compris linenControl et adminChat)
             const sections = ['liveRecord', 'newRecord', 'spa', 'checkout', 'stock', 'lostfound', 'pdfList', 'massEntry', 'dashboard', 'adminChat', 'linenControl'];
             
             sections.forEach(sec => {
@@ -1414,7 +1382,6 @@ function dismissGuestNotificationBanner() {
                 if (el) el.classList.add('hidden');
             });
 
-            // 2. Afficher la section demandée
             let targetEl = document.getElementById('section' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1));
             if (sectionName === 'spa') targetEl = document.getElementById('spa-laundry-section');
 
@@ -1422,29 +1389,24 @@ function dismissGuestNotificationBanner() {
                 targetEl.classList.remove('hidden');
             }
 
-            // 3. Mettre à jour le bouton actif dans la nav
             document.querySelectorAll('.nav-tab-premium').forEach(btn => btn.classList.remove('active'));
             const navBtn = document.getElementById('navBtn' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1));
             if (navBtn) navBtn.classList.add('active');
 
-            // 4. Actions spécifiques par section
             if (sectionName === 'adminChat') {
                 if (window.AdminChat && typeof window.AdminChat.refreshAll === 'function') {
                     window.AdminChat.refreshAll();
                 }
             } else if (sectionName === 'linenControl') {
-                // 🛡️ FIX : garde-fou si la section a été détruite du DOM
                 const linenSection = document.getElementById('sectionLinenControl');
                 if (!linenSection) {
                     console.warn('⚠️ [SwitchPatch] sectionLinenControl introuvable — reload conseillé');
                     alert('⚠️ Linen Control section was removed. Please reload the page (Ctrl+R).');
                     return;
                 }
-                // Attache le handler submit si pas déjà fait (sécurité supplémentaire)
                 if (typeof attachLinenFormHandler === 'function') {
                     try { attachLinenFormHandler(); } catch (e) { console.warn('[SwitchPatch] attachLinenFormHandler:', e); }
                 }
-                // Charge l'historique
                 if (typeof loadRecentLinenSheets === 'function') {
                     try { loadRecentLinenSheets(); } catch (e) { console.warn('[SwitchPatch] loadRecentLinenSheets:', e); }
                 }
