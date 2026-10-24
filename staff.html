@@ -8,7 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#DCA773">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,160 +18,62 @@
     <link rel="stylesheet" href="assets/css/premium-effects.css">
 
     <style>
-        /* =========================================
-           C'EST ICI QU'ON CACHE LES TRUCS ADMIN
-           ========================================= */
+        /* --- SÉCURITÉ : CACHE TOUT CE QUI EST ADMIN --- */
+        [data-admin-only="true"] { display: none !important; }
         
-        /* 1. On cache tous les éléments marqués data-admin-only */
-        [data-admin-only="true"] { 
-            display: none !important; 
-        }
-
-        /* 2. On cache spécifiquement les boutons PC pour ne garder que le menu 3 points */
+        /* --- MASQUE LA SIDEBAR ET GARDE LE MENU 3 POINTS --- */
         .desktop-only-flex { display: none !important; }
         .mobile-only-menu { display: block !important; }
 
-        /* 3. On garde le design original intact pour le reste */
-        /* (Tout le CSS de ton index.html est repris ici) */
+        /* --- AJUSTEMENTS MOBILE POUR LE STAFF --- */
+        body { padding-bottom: 20px; }
         
-        .app-layout { display: flex; height: 100vh; overflow: hidden; position: relative; }
-        
-        .app-sidebar {
-            width: 280px; background-color: #181614; border-right: 1px solid #2f2820;
-            display: flex; flex-direction: column; flex-shrink: 0;
-            position: fixed; left: 0; top: 0; bottom: 0;
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 100; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-        }
-        .app-sidebar.open { transform: translateX(0); }
+        /* Le contenu prend toute la largeur */
+        .app-content { padding: 16px !important; }
 
-        .sidebar-link {
-            display: flex; align-items: center; gap: 12px; padding: 12px 18px; margin: 4px 12px;
-            border-radius: 12px; color: #a8a29e; font-weight: 600; font-size: 13px;
-            text-decoration: none; transition: all 0.3s ease;
-        }
-        .sidebar-link:hover { background-color: #2f2820; color: #DCA773; transform: translateX(5px); }
-        .sidebar-link.active { background: linear-gradient(90deg, #DCA773, #c89360); color: #0f0e0c; font-weight: 800; box-shadow: 0 4px 15px rgba(220, 167, 115, 0.3); }
-        .sidebar-link i { width: 22px; text-align: center; font-size: 15px; }
-
-        .app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; width: 100%; }
-        .app-topbar {
-            height: 70px; background-color: rgba(24, 22, 20, 0.8); backdrop-filter: blur(12px);
-            border-bottom: 1px solid #2f2820;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 24px; flex-shrink: 0; z-index: 50;
-            position: sticky; top: 0;
+        /* Boutons d'action (SPA, List) sur mobile */
+        .mobile-action-btn {
+            flex: 1; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
+            display: flex; justify-content: center; align-items: center; gap: 6px;
+            background: #0f0e0c; border: 1px solid #2f2820; color: #f3f4f6;
         }
         
-        .app-content { flex: 1; overflow-y: auto; padding: 30px; background-color: #0f0e0c; scroll-behavior: smooth; }
-        
-        .sidebar-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-            z-index: 90; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
-        }
-        .sidebar-overlay.visible { opacity: 1; pointer-events: auto; }
-
-        .header-action-btn { 
-            display: flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 12px; 
-            background-color: #0f0e0c; border: 1px solid #2f2820; 
-            color: #a8a29e; transition: all 0.2s; cursor: pointer;
-        }
-        .header-action-btn:hover { color: #DCA773; border-color: #DCA773; background-color: #181614; }
-
-        .quick-actions-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
-        @media (min-width: 768px) { .quick-actions-grid { grid-template-columns: repeat(3, 1fr); } }
-        .quick-action-card {
-            padding: 16px; display: flex; align-items: center; gap: 16px; 
-            border-radius: 16px; background: #181614; border: 1px solid #2f2820;
-            text-align: left; cursor: pointer; transition: all 0.3s ease;
-        }
-        .quick-action-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(220, 167, 115, 0.1); border-color: rgba(220, 167, 115, 0.4); }
-        .quick-action-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #DCA773; color: #0f0e0c; }
-        .quick-action-label { font-size: 15px; font-weight: 700; margin-bottom: 2px; color: #fff; }
-        .quick-action-sub { font-size: 11px; color: #a8a29e; }
-
-        .status-dropdown { position: relative; display: inline-block; }
-        .status-menu {
-            position: absolute; top: 100%; right: 0; margin-top: 8px;
-            background-color: #181614; border: 1px solid #2f2820; border-radius: 16px;
-            padding: 8px; display: flex; flex-direction: column; gap: 6px;
-            min-width: 160px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            opacity: 0; visibility: hidden; transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 50;
-        }
-        .status-dropdown:hover .status-menu, .status-dropdown:focus-within .status-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-        
-        .status-menu-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-            border-radius: 10px; font-size: 12px; font-weight: 700; text-decoration: none;
-            transition: all 0.2s; cursor: pointer; border: none; width: 100%; text-align: left;
-        }
-        .status-menu-item:hover { transform: translateX(4px); }
-        .s-collected { color: #DCA773; background: rgba(220, 167, 115, 0.1); }
-        .s-washing { color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
-        .s-ready { color: #34d399; background: rgba(16, 185, 129, 0.1); }
-        .s-delivered { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
-
-        body.light-mode { background-color: #f3f4f6 !important; color: #1f2937 !important; }
-        body.light-mode .app-topbar { background-color: rgba(255,255,255,0.9) !important; border-bottom: 1px solid #e5e7eb !important; }
-        body.light-mode .app-sidebar { background-color: #ffffff !important; border-right: 1px solid #e5e7eb !important; }
-        body.light-mode .app-content { background-color: #f3f4f6 !important; }
-        body.light-mode .remal-card, body.light-mode .quick-action-card, body.light-mode #sectionLiveRecord > div:first-child, body.light-mode #liveOrdersList > div { background-color: #ffffff !important; border-color: #e5e7eb !important; color: #1f2937 !important; }
-        body.light-mode .text-stone-200, body.light-mode .text-stone-300, body.light-mode .text-stone-400 { color: #4b5563 !important; }
-        body.light-mode .header-action-btn { background-color: #ffffff !important; border-color: #e5e7eb !important; color: #4b5563 !important; }
-        body.light-mode .sidebar-link { color: #4b5563 !important; }
-        body.light-mode .sidebar-link:hover, body.light-mode .sidebar-link.active { color: #DCA773 !important; background-color: #fef3c7 !important; }
-        body.light-mode .status-menu { background-color: #ffffff !important; border-color: #e5e7eb !important; }
-
-        @media print {
-            body.printing-linen > *:not(#linenPrintModal) { display: none !important; }
-            body.printing-linen #linenPrintModal { position: static !important; background: white !important; padding: 0 !important; display: block !important; overflow: visible !important; }
-            body.printing-linen #linenPrintModal .flex-shrink-0 { display: none !important; }
-            body.printing-linen #linenPrintArea { width: 100% !important; max-width: 100% !important; border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
-        }
+        /* Le Topbar est simplifié */
+        .app-topbar { padding: 0 16px !important; }
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
 
+<!-- ═══ VIP REALTIME BANNER ═══ -->
+<div id="guestBannerContainer" onclick="dismissGuestNotificationBanner()" style="display: none;" class="fixed top-0 left-0 right-0 z-[9999] bg-emerald-600 text-white px-6 py-4 shadow-2xl border-b-2 border-emerald-400 animate-bounce justify-between items-center cursor-pointer no-print">
+    <div class="flex items-center gap-4">
+        <span class="text-2xl">🔔</span>
+        <div>
+            <p class="text-sm font-black uppercase tracking-wider">New Live Guest Request!</p>
+            <p id="guestBannerText" class="text-xs font-semibold text-emerald-100">Room --- just submitted a laundry order.</p>
+        </div>
+    </div>
+    <button onclick="event.stopPropagation(); dismissGuestNotificationBanner();" class="bg-emerald-800 hover:bg-emerald-900 text-white font-bold px-3 py-1 rounded-lg text-xs" title="Close">Close ✕</button>
+</div>
+
 <!-- ═══ APP LAYOUT ═══ -->
 <div class="app-layout">
 
-    <!-- ═══ SIDEBAR ═══ -->
-    <aside id="appSidebar" class="app-sidebar">
-        <div class="p-6 border-b border-[#2f2820] flex items-center gap-3 cursor-pointer" onclick="switchMainSection('liveRecord'); toggleAppSidebar();">
-            <img src="assets/remal-logo.png" alt="Remal" class="h-10 w-auto object-contain">
-            <div>
-                <h1 class="font-serif-luxury text-xl text-[#DCA773] font-bold tracking-widest leading-none">REMAL</h1>
-                <p class="text-[10px] text-stone-400 uppercase tracking-widest mt-1">Laundry OS</p>
-            </div>
-        </div>
-
-        <nav class="flex-1 overflow-y-auto py-4 space-y-1">
-            <a href="#" onclick="switchMainSection('liveRecord'); toggleAppSidebar();" id="navBtnLiveRecord" class="sidebar-link active">
-                <i class="fas fa-bed"></i> <span>Active Rooms</span>
-            </a>
-            <a href="#" onclick="switchMainSection('spa'); toggleAppSidebar();" id="navBtnSpa" class="sidebar-link">
-                <i class="fas fa-spa"></i> <span>SPA</span>
-            </a>
-            <a href="#" onclick="ouvrirModalActiveRoomsList(); toggleAppSidebar();" class="sidebar-link">
-                <i class="fas fa-list-ol"></i> <span>Active Rooms List</span>
-            </a>
-        </nav>
-    </aside>
-
+    <!-- Overlay (caché car pas de sidebar) -->
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleAppSidebar()"></div>
 
     <!-- ═══ MAIN CONTENT ═══ -->
     <div class="app-main">
         
+        <!-- Topbar -->
         <header class="app-topbar no-print">
             <div class="flex items-center gap-4">
+                <!-- Bouton Menu -->
                 <button onclick="toggleAppSidebar()" class="header-action-btn" title="Menu">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
 
+                <!-- Logo Mini -->
                 <div class="flex items-center gap-2 cursor-pointer" onclick="switchMainSection('liveRecord')">
                     <img src="assets/remal-logo.png" alt="Remal" class="h-8 w-auto object-contain">
                     <h1 class="font-serif-luxury text-lg text-[#DCA773] font-bold tracking-widest leading-none hidden sm:block">REMAL</h1>
@@ -180,14 +81,10 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <!-- Boutons Desktop (Cachés, on ne garde que le menu 3 points) -->
-                <div class="desktop-only-flex items-center gap-2">
-                    <button onclick="toggleTheme()" class="header-action-btn" id="themeToggleBtn" title="Toggle theme">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                </div>
+                <!-- On masque les boutons admin (chat, etc) -->
+                <div id="headerAdminContainer" class="hidden"></div>
 
-                <!-- Menu 3 points -->
+                <!-- Menu 3 points (Thème + Logout) -->
                 <div class="mobile-only-menu relative">
                     <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                         <i class="fas fa-ellipsis-vertical"></i>
@@ -204,9 +101,10 @@
             </div>
         </header>
 
+        <!-- ═══ CONTENT ZONE ═══ -->
         <main class="app-content no-print" id="appContent">
             
-            <!-- QUICK ACTIONS (New Record uniquement pour le staff) -->
+            <!-- ═══ QUICK ACTIONS (New Record, Search Room, Archives - cachés si admin) ═══ -->
             <div id="quickActionButtons" class="quick-actions-grid role-admin no-print">
                 <button onclick="switchMainSection('newRecord')" class="quick-action-card">
                     <div class="quick-action-icon"><i class="fas fa-plus"></i></div>
@@ -217,10 +115,157 @@
                 </button>
             </div>
 
-            <!-- On garde TOUTES les sections de ton index.html intactes -->
-            <!-- (Il te suffit de copier-coller ici les sections sectionNewRecord, sectionLiveRecord, spa-laundry-section, etc.) -->
-            
-            <!-- Pour te simplifier la vie, je te remets la section Live Record qui est la plus importante -->
+            <!-- ═══ SECTIONS ═══ -->
+            <!-- ═══ SECTION NEW RECORD (INTACTE) ═══ -->
+            <div id="sectionNewRecord" class="hidden space-y-4 no-print">
+                <div class="remal-card p-6 lg:p-8 rounded-3xl relative max-w-6xl mx-auto">
+                    <div class="flex justify-between items-center border-b border-[#2f2820] pb-4 mb-6">
+                        <h2 class="text-xl font-serif-luxury font-bold text-[#DCA773]" id="lblFormTitle">New Record</h2>
+                        <button onclick="switchMainSection('liveRecord')" class="text-stone-400 hover:text-stone-200 font-bold text-2xl px-2">✕</button>
+                    </div>
+
+                    <input type="hidden" id="editingRecordId" value="">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-5 space-y-5">
+                            <!-- TON FORMULAIRE INTACT ICI -->
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1.5 tracking-wide" id="lblRoomNum">Room Number</label>
+                                <div class="relative">
+                                    <input type="number" id="roomNumber" oninput="onRoomNumberInput()" placeholder="e.g., 103, 205, 348..." class="w-full remal-input rounded-2xl p-4 text-base font-bold" autocomplete="off">
+                                    <div id="roomAutocompleteDropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-[#0f0e0c] border border-[#DCA773]/40 rounded-2xl shadow-2xl z-[60] max-h-80 overflow-y-auto scrollbar-none"></div>
+                                </div>
+                                <p class="text-[11px] text-stone-400 mt-1.5" id="lblValidRanges">Valid: 103-144 · 201-246 · 301-348 · 401-448 · 501-520 · 601-608</p>
+
+                                <div id="roomPmsInfoBox" class="hidden mt-3 p-3.5 bg-[#0f0e0c] rounded-2xl border border-[#2f2820] text-xs space-y-2 shadow-inner">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-stone-400 font-medium">Guest Name:</span>
+                                        <span id="pmsInfoGuest" class="font-bold text-stone-100">---</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-stone-400 font-medium">Room Type:</span>
+                                        <span id="pmsInfoTyp" class="font-bold text-stone-200">---</span>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 py-2 my-1 border-y border-[#2f2820] bg-[#181614]/60 px-2.5 rounded-xl text-[11px]">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-amber-400 font-semibold">🛬 Arr:</span>
+                                            <span id="pmsInfoArrival" class="text-stone-200 font-bold">---</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 justify-end">
+                                            <span class="text-amber-400 font-semibold">🛫 Dep:</span>
+                                            <span id="pmsInfoDeparture" class="text-stone-200 font-bold">---</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-stone-400 font-medium">Laundry Quota:</span>
+                                        <span id="pmsInfoQuota" class="font-bold text-emerald-400">---</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-stone-400 font-medium">Agency / Origin:</span>
+                                        <span id="pmsInfoAgency" class="font-bold text-stone-200">---</span>
+                                    </div>
+                                </div>
+
+                                <p id="roomErrorMsg" class="hidden text-rose-400 text-xs font-bold mt-2 flex items-center gap-1">
+                                    ⚠️ <span id="lblRoomError">Invalid room number! Allowed ranges: 103-144, 201-246, 301-348, 401-448, 501-520, 601-608.</span>
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1.5">Account & Quota Type</label>
+                                <div class="grid grid-cols-3 gap-2 bg-[#0f0e0c] p-2 rounded-2xl border border-[#2f2820] text-xs font-bold text-center">
+                                    <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="py-3 px-1 rounded-xl bg-[#DCA773] text-stone-950 shadow transition leading-tight">Hotel Count (Free)</button>
+                                    <button onclick="selectCountType('quota_extra')" id="btn-count-quota-extra" class="py-3 px-1 rounded-xl text-stone-400 transition leading-tight">Hotel & Extra Charged</button>
+                                    <button onclick="selectCountType('guest')" id="btn-count-guest" class="py-3 px-1 rounded-xl text-stone-400 transition leading-tight">Guest Count (Full)</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1.5">Service Type</label>
+                                <div class="flex gap-2 text-xs font-bold">
+                                    <button onclick="switchService('laundry')" id="tab-service-laundry" class="flex-1 py-3 rounded-xl bg-[#DCA773] text-stone-950 shadow">LAUNDRY</button>
+                                    <button onclick="switchService('dry')" id="tab-service-dry" class="flex-1 py-3 rounded-xl bg-[#0f0e0c] text-stone-400 border border-[#2f2820]">DRY CLEANING</button>
+                                    <button onclick="switchService('pressing')" id="tab-service-pressing" class="flex-1 py-3 rounded-xl bg-[#0f0e0c] text-stone-400 border border-[#2f2820]">PRESSING</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-stone-400 mb-1.5">Packaging</label>
+                                <div class="grid grid-cols-3 gap-2 p-2 bg-[#0f0e0c] rounded-2xl border border-[#2f2820] text-xs font-bold text-center text-stone-300">
+                                    <label class="flex flex-col items-center justify-center p-2.5 bg-[#181614] rounded-xl border border-[#2f2820] cursor-pointer hover:border-[#DCA773]">
+                                        <input type="radio" name="foldingOption" value="F — Folding" checked class="accent-[#DCA773] mb-1"> F — Folding
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-2.5 bg-[#181614] rounded-xl border border-[#2f2820] cursor-pointer hover:border-[#DCA773]">
+                                        <input type="radio" name="foldingOption" value="H/F — Hanger/Folding" class="accent-[#DCA773] mb-1"> H/F — Hanger/Folding
+                                    </label>
+                                    <label class="flex flex-col items-center justify-center p-2.5 bg-[#181614] rounded-xl border border-[#2f2820] cursor-pointer hover:border-[#DCA773]">
+                                        <input type="radio" name="foldingOption" value="S — Single" class="accent-[#DCA773] mb-1"> S — Single
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-7 space-y-5">
+                            <div id="itemsContainer" class="space-y-3 max-h-[360px] overflow-y-auto pr-2 scrollbar-none bg-[#0f0e0c] p-4 rounded-2xl border border-[#2f2820]"></div>
+
+                            <details id="detailsCustomItems" class="bg-[#0f0e0c] rounded-2xl border border-[#2f2820] group transition-all duration-300">
+                                <summary class="p-3.5 cursor-pointer font-bold text-[#DCA773] text-xs uppercase tracking-wider flex justify-between items-center select-none">
+                                    <span>➕ Other / Custom Items (Manual Entry)</span>
+                                    <span class="text-stone-400 transition-transform group-open:rotate-180">▼</span>
+                                </summary>
+                                <div class="p-3.5 pt-0 space-y-2.5 border-t border-[#2f2820]/40 mt-1" id="customItemsContainer">
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" placeholder="Item name (e.g. Special Coat)" id="customName0" oninput="calculateGlobalTotals()" class="flex-1 remal-input rounded-xl px-3 py-2 text-xs font-semibold">
+                                        <input type="number" placeholder="Price" id="customPrice0" min="0" step="0.5" oninput="calculateGlobalTotals()" class="w-24 remal-input rounded-xl px-2 py-2 text-xs text-center font-semibold">
+                                        <input type="number" placeholder="Qty" id="customQty0" min="0" value="" oninput="calculateGlobalTotals()" class="w-20 remal-input rounded-xl px-2 py-2 text-xs text-center font-bold">
+                                    </div>
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" placeholder="Item name" id="customName1" oninput="calculateGlobalTotals()" class="flex-1 remal-input rounded-xl px-3 py-2 text-xs font-semibold">
+                                        <input type="number" placeholder="Price" id="customPrice1" min="0" step="0.5" oninput="calculateGlobalTotals()" class="w-24 remal-input rounded-xl px-2 py-2 text-xs text-center font-semibold">
+                                        <input type="number" placeholder="Qty" id="customQty1" min="0" value="" oninput="calculateGlobalTotals()" class="w-20 remal-input rounded-xl px-2 py-2 text-xs text-center font-bold">
+                                    </div>
+                                    <div class="flex gap-2 items-center">
+                                        <input type="text" placeholder="Item name" id="customName2" oninput="calculateGlobalTotals()" class="flex-1 remal-input rounded-xl px-3 py-2 text-xs font-semibold">
+                                        <input type="number" placeholder="Price" id="customPrice2" min="0" step="0.5" oninput="calculateGlobalTotals()" class="w-24 remal-input rounded-xl px-2 py-2 text-xs text-center font-semibold">
+                                        <input type="number" placeholder="Qty" id="customQty2" min="0" value="" oninput="calculateGlobalTotals()" class="w-20 remal-input rounded-xl px-2 py-2 text-xs text-center font-bold">
+                                    </div>
+                                </div>
+                            </details>
+
+                            <div class="bg-[#211e1a] border border-[#2f2820] text-[#DCA773] p-3.5 rounded-2xl flex justify-between items-center font-bold text-xs">
+                                <span id="lblSelectedGarments">Total Garments:</span>
+                                <span id="currentBordereauCount" class="bg-[#DCA773] text-stone-950 px-4 py-1.5 rounded-full text-xs font-extrabold">0 pieces</span>
+                            </div>
+
+                            <div class="bg-[#0f0e0c] border border-[#2f2820] p-4 rounded-2xl text-xs space-y-2 font-medium">
+                                <div class="flex justify-between"><span id="lblSubTotal">Subtotal:</span><span id="subTotal">0.00 AED</span></div>
+                                <div class="flex justify-between"><span id="lblVat">VAT (5%):</span><span id="vatAmount">0.00 AED</span></div>
+                                <div class="flex justify-between font-bold text-base border-t border-[#2f2820] pt-2 mt-1"><span id="lblGrandTotal">Grand Total:</span><span id="grandTotal" class="text-[#DCA773] font-serif-luxury text-lg">0.00 AED</span></div>
+                            </div>
+
+                            <details id="detailsGarmentNotes" class="bg-[#0f0e0c] rounded-2xl border border-[#2f2820] group transition-all duration-300">
+                                <summary class="p-3.5 cursor-pointer font-bold text-stone-400 text-xs tracking-wide flex justify-between items-center select-none">
+                                    <span>📝 Garment Notes / Defects (Optional)</span>
+                                    <span class="text-stone-400 transition-transform group-open:rotate-180">▼</span>
+                                </summary>
+                                <div class="p-3.5 pt-0 border-t border-[#2f2820]/40 mt-1">
+                                    <textarea id="recordOptionalNote" placeholder="e.g., Stain on collar, small tear on left sleeve, missing button..." class="w-full h-20 remal-input rounded-xl p-3 text-xs outline-none resize-none mt-2"></textarea>
+                                </div>
+                            </details>
+
+                            <button onclick="document.getElementById('photoInput').click()" class="w-full bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-300 font-bold p-3.5 rounded-2xl text-xs border border-dashed border-[#2f2820] transition flex items-center justify-center gap-2" id="btnPhotoProof">
+                                <span>📷</span> Take Proof Photo (Camera)
+                            </button>
+                            <input type="file" id="photoInput" class="hidden" accept="image/*" capture="environment" onchange="previewImage(event)">
+                            <img id="imagePreview" class="hidden w-full max-h-48 object-cover rounded-2xl mt-2 border border-[#2f2820]" alt="Proof">
+
+                            <button onclick="sauvegarderBordereauDepuisFormulaire()" id="btnSaveRecord" class="w-full bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold py-4 rounded-2xl text-sm shadow-lg transition tracking-wider uppercase">💾 Save Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION LIVE RECORD ═══ -->
             <div id="sectionLiveRecord" class="space-y-4 no-print">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#181614] p-4 rounded-2xl border border-[#2f2820]">
                     <div class="flex items-center gap-3">
@@ -234,6 +279,7 @@
                             <span class="hidden sm:inline">Active Rooms List</span>
                             <span class="sm:hidden">List</span>
                         </button>
+                        
                         <button onclick="switchMainSection('spa')" class="mobile-only-btn flex-1 md:flex-none bg-[#0f0e0c] hover:bg-[#211e1a] text-stone-200 border border-[#2f2820] font-bold px-3 py-2 rounded-xl text-xs items-center justify-center gap-2 transition">
                             <i class="fas fa-spa text-[#DCA773]"></i>
                             <span>SPA</span>
@@ -241,37 +287,299 @@
                     </div>
                 </div>
 
+                <!-- Grille des chambres -->
                 <div id="liveOrdersList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
                     <p class="text-xs text-stone-500 text-center py-6 col-span-full">Loading active rooms...</p>
                 </div>
             </div>
 
-            <!-- ═══ LES AUTRES SECTIONS (CACHÉES PAR DÉFAUT) ═══ -->
-            <!-- J'inclus les blocs vides pour que tes scripts JS ne plantent pas -->
-            <div id="sectionNewRecord" class="hidden space-y-4 no-print">
-                <!-- Ton formulaire complet doit être copié ici. 
-                     Pour l'exemple, je mets un placeholder. -->
-                <div class="remal-card p-6 rounded-3xl relative max-w-6xl mx-auto text-center text-stone-400">
-                    <p>Formulaire New Record (Copie ton code ici)</p>
-                    <button onclick="switchMainSection('liveRecord')" class="text-[#DCA773] mt-4">Retour</button>
-                </div>
-            </div>
-
+            <!-- ═══ SECTION SPA (INTACTE) ═══ -->
             <section id="spa-laundry-section" class="hidden p-6 sm:p-10 rounded-3xl space-y-6 relative max-w-4xl mx-auto printable-page bg-white text-stone-900 shadow-2xl border border-stone-200">
-                <p class="text-center text-stone-500">Formulaire SPA (Copie ton code ici)</p>
-                <button onclick="switchMainSection('liveRecord')" class="text-[#DCA773] mt-4 w-full text-center">Retour</button>
+                <input type="hidden" id="editingSpaId" value="">
+
+                <div class="spa-header border-b border-stone-300 pb-6">
+                    <div class="spa-header-row">
+                        <div class="spa-header-logo-left">
+                            <img src="assets/remal-logo.png" alt="Remal" class="spa-logo-img" onerror="this.style.display='none';">
+                        </div>
+                        <div class="spa-header-title">
+                            <h2 class="spa-title-main">S P A</h2>
+                            <p class="spa-title-sub">Laundry Daily Record Sheet</p>
+                        </div>
+                        <div class="spa-header-logo-right">
+                            <img src="assets/velement-logo.png" alt="V Element SPA" class="spa-logo-img" onerror="this.style.display='none';">
+                        </div>
+                    </div>
+                    <div class="spa-header-date">
+                        <div class="flex items-center justify-center gap-2 text-xs text-stone-500">
+                            <span class="font-bold uppercase tracking-wider">Date :</span>
+                            <span id="spa-current-date" class="font-semibold text-stone-800"></span>
+                        </div>
+                        <h2 id="spaFormTitleLabel" style="display:none;">V Element SPA Laundry Daily Record Sheet</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-stone-50 p-4 rounded-2xl border border-stone-200">
+                    <div class="flex items-center gap-2 border-b border-stone-300 py-2">
+                        <span class="text-xs font-bold text-stone-600 uppercase min-w-[120px]">Given By (Spa):</span>
+                        <input type="text" id="spa-given-by" class="w-full font-semibold focus:outline-none border-none p-0 bg-transparent text-xs text-stone-900" placeholder="Spa Employee Name">
+                    </div>
+                    <div class="flex items-center gap-2 border-b border-stone-300 py-2 justify-end">
+                        <span class="text-xs font-bold text-stone-600 uppercase">SERIAL NO:</span>
+                        <input type="text" id="spa-serial-no" class="w-32 text-right text-sm font-black text-amber-700 ml-2 bg-white border border-stone-300 rounded-xl px-3 py-1.5" placeholder="Serial">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse border border-stone-300 rounded-2xl overflow-hidden bg-white">
+                        <thead>
+                            <tr class="bg-stone-100 text-stone-900 text-xs uppercase tracking-wider text-center border-b border-stone-300 font-bold">
+                                <th class="p-3.5 text-left">Item</th>
+                                <th class="p-3.5">Quantity</th>
+                                <th class="p-3.5">Rate (AED)</th>
+                                <th class="p-3.5">Total Amount (AED)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs font-medium divide-y divide-stone-200 text-stone-800">
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3.5 font-bold">BATH TOWEL</td>
+                                <td class="p-3.5 text-center"><input type="number" class="spa-qty-input w-20 text-center bg-stone-50 border border-stone-300 text-stone-950 rounded-lg p-1.5 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-3.5 text-center text-stone-600">2.00</td>
+                                <td class="p-3.5 text-center font-bold text-stone-950 spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3.5 font-bold">HAND TOWEL</td>
+                                <td class="p-3.5 text-center"><input type="number" class="spa-qty-input w-20 text-center bg-stone-50 border border-stone-300 text-stone-950 rounded-lg p-1.5 font-bold" min="0" data-rate="1" oninput="calculateSpaTotal()"></td>
+                                <td class="p-3.5 text-center text-stone-600">1.00</td>
+                                <td class="p-3.5 text-center font-bold text-stone-950 spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3.5 font-bold">BED SHEET</td>
+                                <td class="p-3.5 text-center"><input type="number" class="spa-qty-input w-20 text-center bg-stone-50 border border-stone-300 text-stone-950 rounded-lg p-1.5 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-3.5 text-center text-stone-600">2.00</td>
+                                <td class="p-3.5 text-center font-bold text-stone-950 spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3.5 font-bold">PILLOW CASE</td>
+                                <td class="p-3.5 text-center"><input type="number" class="spa-qty-input w-20 text-center bg-stone-50 border border-stone-300 text-stone-950 rounded-lg p-1.5 font-bold" min="0" data-rate="1" oninput="calculateSpaTotal()"></td>
+                                <td class="p-3.5 text-center text-stone-600">1.00</td>
+                                <td class="p-3.5 text-center font-bold text-stone-950 spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="hover:bg-stone-50">
+                                <td class="p-3.5 font-bold">BATHROBE</td>
+                                <td class="p-3.5 text-center"><input type="number" class="spa-qty-input w-20 text-center bg-stone-50 border border-stone-300 text-stone-950 rounded-lg p-1.5 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-3.5 text-center text-stone-600">2.00</td>
+                                <td class="p-3.5 text-center font-bold text-stone-950 spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="bg-stone-100 font-bold text-stone-950">
+                                <td colspan="3" class="p-3.5 text-right uppercase tracking-wider text-xs">Grand Total :</td>
+                                <td id="spa-grand-total" class="p-3.5 text-center text-amber-700 text-lg font-black">0.00 AED</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-5 bg-stone-50 rounded-2xl border border-stone-200">
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Collected By (Laundry) :</label>
+                            <input type="text" id="spa-collected-by" class="w-full px-3.5 py-2.5 bg-white border border-stone-300 text-stone-900 rounded-xl font-semibold text-xs" placeholder="Laundry Collection Agent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Collection Date & Time :</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="date" id="spa-collection-date" class="px-3 py-2 bg-white border border-stone-300 text-stone-900 rounded-xl font-medium text-xs cursor-pointer">
+                                <input type="time" id="spa-collection-time" class="px-3 py-2 bg-white border border-stone-300 text-stone-900 rounded-xl font-medium text-xs cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Delivered By (Laundry) :</label>
+                            <input type="text" id="spa-delivered-by" class="w-full px-3.5 py-2.5 bg-white border border-stone-300 text-stone-900 rounded-xl font-semibold text-xs" placeholder="Laundry Delivery Agent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-stone-700 uppercase mb-1">Delivery Date & Time :</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="date" id="spa-delivery-date" class="px-3 py-2 bg-white border border-stone-300 text-stone-900 rounded-xl font-medium text-xs cursor-pointer">
+                                <input type="time" id="spa-delivery-time" class="px-3 py-2 bg-white border border-stone-300 text-stone-900 rounded-xl font-medium text-xs cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pdf-footer-template" class="hidden border-t border-stone-300 pt-3 text-stone-600 text-[10px] flex justify-between items-center">
+                    <div>Receipt No: <span id="pdf-footer-serial-no" class="font-bold">--</span></div>
+                    <div class="text-right">Downloaded: <span id="pdf-footer-download-time" class="font-semibold"></span></div>
+                </div>
+
+                <div id="spa-action-buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 no-print">
+                    <button onclick="validateAndSaveSpaReceipt()" id="btnSaveSpa" class="w-full py-3.5 bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold rounded-xl shadow transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                        <i class="fas fa-check-circle"></i> Validate & Save SPA Receipt
+                    </button>
+                    <button onclick="exportSpaToPDF()" class="w-full py-3.5 bg-[#181614] hover:bg-[#211e1a] text-[#DCA773] border border-[#2f2820] font-bold rounded-xl shadow transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                        <i class="fas fa-file-pdf"></i> Export SPA PDF
+                    </button>
+                </div>
             </section>
 
         </main>
     </div>
 </div>
 
-<!-- TES SCRIPTS -->
+<!-- ═══════════════════════════════════════════════════════════════════
+     MODALES 
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<!-- MODAL — DETAILS RECEIPT (LAUNDRY) -->
+<div id="detailModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+    <div class="bg-[#181614] w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto border border-[#2f2820] relative">
+       <div id="pdfExportArea" class="pdf-export-area p-6 space-y-5 bg-white text-stone-900 rounded-2xl printable-page max-w-[700px] mx-auto">
+            <div class="receipt-header-compact">
+                <button onclick="fermerModal()" class="receipt-close-btn no-print">✕</button>
+                <div class="receipt-header-left"><img src="assets/remal-logo.png" alt="Remal" class="receipt-logo-compact" onerror="this.style.display='none';"></div>
+                <div class="receipt-header-right"><div id="modalRoomNumDisplay" class="receipt-room-number">---</div></div>
+            </div>
+            <h2 id="modalPdfHotelName" style="display:none;margin:0;">REMAL HOTEL & VILLAS</h2>
+            <p id="modalPdfHotelSub" style="display:none;margin:0;">Al Ruwais City, Abu Dhabi – UAE</p>
+
+            <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3 receipt-info-box">
+                <div class="flex justify-between items-start">
+                    <div class="receipt-info-left">
+                        <span id="modalIdentifierLabel" style="display:none;">Room:</span>
+                        <p id="modalPdfLaundryService" class="receipt-service-compact">LAUNDRY SERVICE</p>
+                        <p id="modalPdfReceiptId" class="receipt-id-compact">Receipt ID: <strong id="modalReceiptIdDisplay">---</strong></p>
+                    </div>
+                    <div class="text-right">
+                        <p id="modalDate" class="text-xs text-stone-500 font-bold"></p>
+                        <span id="modalTypeBadgeInline" class="text-[10px] bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full border border-amber-300 inline-block mt-1">Hotel Count</span>
+                    </div>
+                </div>
+                <div id="modalAgencyQuotaBox" class="hidden pt-3 border-t border-stone-200 text-xs space-y-1.5 text-stone-700 font-bold">
+                    <div class="flex justify-between"><span id="modalLblGuestName">Guest Name:</span> <span id="modalGuestDisplay" class="text-stone-900">---</span></div>
+                    <div class="flex justify-between"><span id="modalLblRoomTyp">Room Typ:</span> <span id="modalTypDisplay" class="text-stone-900">---</span></div>
+                    <div class="flex justify-between"><span id="modalLblAgency">Agency:</span> <span id="modalAgencyDisplay" class="text-stone-900">---</span></div>
+                    <div class="flex justify-between"><span id="modalLblQuota">Laundry Quota:</span> <span id="modalQuotaDisplay" class="text-rose-600">---</span></div>
+                    <div class="flex justify-between border-t border-stone-200 pt-1.5 text-[11px] text-stone-500"><span id="modalLblAgent">Agent:</span> <span id="modalCreatedByDisplay" class="text-stone-700 font-bold">---</span></div>
+                </div>
+            </div>
+            <div class="bg-stone-50 p-3 rounded-xl border border-stone-200 text-xs font-bold text-stone-700 flex justify-between">
+                <span id="modalLblPackaging">Packaging:</span>
+                <span id="modalPackagingStyle" class="text-amber-700">F — Folding</span>
+            </div>
+
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-stone-100 text-stone-900 font-bold text-xs border-b border-stone-300 uppercase tracking-wider">
+                        <th id="modalThItem" class="p-3">Item</th>
+                        <th id="modalThQty" class="p-3 text-center">Qty</th>
+                        <th id="modalThTotal" class="p-3 text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody id="modalTableBody" class="divide-y divide-stone-200 text-stone-800 font-medium"></tbody>
+            </table>
+
+            <div class="bg-stone-50 p-4 rounded-xl text-xs space-y-2 font-medium text-stone-700 border border-stone-200 receipt-total-box">
+                <div class="flex justify-between font-bold text-stone-900 border-b border-stone-200 pb-2"><span id="modalLblTotalPieces">Total Pieces:</span><span id="modalClothesCount">0 pieces</span></div>
+                <div class="flex justify-between font-bold text-lg text-stone-900 pt-1 items-center">
+                    <span id="modalLblGrandTotal" class="receipt-total-label">Grand Total:</span>
+                    <span id="modalTotal" class="text-amber-700 font-serif-luxury text-xl receipt-total-value">0.00 AED</span>
+                </div>
+            </div>
+
+            <div id="modalNoteBox" class="hidden bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs space-y-1 text-stone-800">
+                <p id="modalLblGarmentNotes" class="font-bold text-amber-900 uppercase tracking-wide text-[10px]">Garment Notes / Defects:</p>
+                <p id="modalNoteText" class="font-medium whitespace-pre-wrap"></p>
+            </div>
+
+            <div id="modalPhotoContainer" class="pt-1"></div>
+
+            <div class="receipt-footer">THANK YOU FOR YOUR STAY</div>
+        </div>
+
+        <div class="space-y-3 pt-2 no-print">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="genererPDF(selectedIdForModal)" class="bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold py-3.5 rounded-xl text-xs shadow flex items-center justify-center gap-2">📥 Download PDF</button>
+                <a id="btnWhatsappShare" href="#" target="_blank" class="bg-stone-800 hover:bg-stone-700 text-stone-100 font-bold py-3.5 rounded-xl text-xs shadow flex items-center justify-center gap-2">💬 Share WhatsApp</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL — ACTIVE ROOMS LIST -->
+<div id="activeRoomsListModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 no-print">
+    <div class="bg-[#181614] w-full max-w-3xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] flex flex-col border border-[#2f2820]">
+        <div class="flex justify-between items-center border-b border-[#2f2820] pb-3">
+            <div>
+                <h3 class="text-base font-serif-luxury font-bold text-[#DCA773]">Active Hotel Laundry Rooms Overview</h3>
+                <p class="text-xs text-stone-400">List of the day's rooms (ascending order)</p>
+            </div>
+            <button onclick="fermerModalActiveRoomsList()" class="text-stone-400 text-2xl font-bold hover:text-stone-200">✕</button>
+        </div>
+
+        <div id="activeRoomsPdfExportArea" class="bg-white text-stone-900 p-6 rounded-2xl border border-stone-200 overflow-y-auto flex-1 font-sans">
+            <div class="text-center border-b border-stone-300 pb-4 mb-4">
+                <h2 class="text-lg font-serif-luxury font-black text-stone-950 tracking-wider">REMAL HOTEL & VILLAS</h2>
+                <p class="text-[9px] text-stone-500 uppercase tracking-widest font-bold">Al Ruwais City, Abu Dhabi – UAE</p>
+                <div class="mt-2 flex justify-between items-center px-2 text-xs font-bold text-amber-800 border-t border-stone-200 pt-2">
+                    <span>DAILY LAUNDRY ACTIVE ROOMS LIST</span>
+                    <span id="activeRoomsPdfDate" class="text-stone-600 font-semibold">Date: --</span>
+                </div>
+            </div>
+            <table class="w-full text-xs text-left border-collapse">
+                <thead>
+                    <tr class="bg-stone-100 text-stone-900 font-bold border-b border-stone-300 uppercase tracking-wider text-[10px]">
+                        <th class="p-2.5">Room</th>
+                        <th class="p-2.5">Guest Name</th>
+                        <th class="p-2.5">Packaging</th>
+                        <th class="p-2.5">Account & Quota</th>
+                        <th class="p-2.5 text-right">Pieces</th>
+                    </tr>
+                </thead>
+                <tbody id="activeRoomsTableBody" class="divide-y divide-stone-200 text-stone-800 font-medium"></tbody>
+            </table>
+            <div class="mt-4 pt-3 border-t border-stone-300 flex justify-between text-[11px] font-bold text-stone-600">
+                <span>Total Active Rooms: <strong id="activeRoomsTotalCount" class="text-stone-950">0</strong></span>
+                <span>Total Garments: <strong id="activeRoomsTotalPieces" class="text-stone-950">0 pcs</strong></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-2">
+            <button onclick="exportActiveRoomsListToPDF()" class="py-3 bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold rounded-xl text-xs uppercase tracking-wider transition shadow flex items-center justify-center gap-2">
+                <i class="fas fa-file-pdf"></i> 📥 Download PDF List
+            </button>
+            <button onclick="fermerModalActiveRoomsList()" class="py-3 bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold rounded-xl text-xs uppercase tracking-wider transition">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL — STAFF LOGIN -->
+<div id="staffLoginModal" class="hidden fixed inset-0 z-[99999] bg-[#09090b]/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="remal-card w-full max-w-md p-8 rounded-3xl border border-[#2f2820] text-center space-y-6 shadow-2xl">
+        <div>
+            <div class="w-16 h-16 bg-[#DCA773]/10 border border-[#DCA773]/30 rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3">🔐</div>
+            <h2 class="font-serif-luxury text-2xl font-bold text-[#DCA773]">Staff Authentication</h2>
+            <p class="text-xs text-stone-400 mt-1">Enter your 4-digit PIN code to access Laundry OS.</p>
+        </div>
+        <div class="space-y-4">
+            <div><input type="password" id="staffPinInput" maxlength="6" placeholder="••••" class="w-full text-center tracking-[1em] text-2xl py-4 remal-input rounded-2xl font-bold outline-none border border-[#2f2820] focus:border-[#DCA773]"></div>
+            <div id="loginErrorMsg" class="text-xs text-rose-400 font-semibold hidden">Invalid PIN code. Please try again.</div>
+            <button onclick="verifyStaffPin()" class="w-full py-4 bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold rounded-2xl transition shadow-lg text-sm">Unlock Session</button>
+        </div>
+        <div class="pt-2 border-t border-[#2f2820] flex justify-between items-center text-[10px] text-stone-500">
+            <span>Remal Laundry OS v2.6</span>
+            <span id="currentLoggedStaff" class="text-stone-400">Locked</span>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ LIBRARIES ═══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- ═══ SCRIPTS (Les mêmes que index.html) ═══ -->
 <script src="js/config.js"></script>
 <script src="js/laundry.js"></script>
 <script src="js/realtime-listener.js"></script>
@@ -289,7 +597,13 @@
 <script src="js/ui-core.js"></script> 
 
 <script>
-    // Le script d'initialisation
+    // Gestion de la sidebar (juste pour fermer l'overlay si jamais)
+    function toggleAppSidebar() {
+        const overlay = document.getElementById('sidebarOverlay');
+        if (overlay) overlay.classList.toggle('visible');
+    }
+
+    // Initialisation
     setTimeout(() => {
         if (typeof initApp === 'function') initApp();
     }, 500);
