@@ -9,16 +9,15 @@
     <meta name="theme-color" content="#DCA773">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="style.css">
-    
+    <link rel="stylesheet" href="assets/css/premium-effects.css">
+
     <style>
         /* On force le mode sombre et l'adaptation mobile */
         body { background-color: #0f0e0c; color: #f3f4f6; }
-        
-        /* Cacher les éléments admin (au cas où) */
         [data-admin-only="true"] { display: none !important; }
         
         /* Barre supérieure fixe */
@@ -31,46 +30,19 @@
         
         /* Contenu principal */
         .staff-content {
-            padding: 76px 16px 20px 16px; /* 60px topbar + 16px marge */
+            padding: 76px 16px 20px 16px;
             min-height: 100vh;
         }
 
-        /* Cartes des chambres optimisées mobile */
-        .room-card {
+        /* Ajustements spécifiques mobile pour les cartes */
+        #liveOrdersList > div {
             background: #181614; border: 1px solid #2f2820;
             border-radius: 16px; padding: 16px; margin-bottom: 12px;
-            display: flex; flex-direction: column; gap: 8px;
         }
         
-        .room-header { display: flex; justify-content: space-between; align-items: center; }
-        .room-title { font-family: 'Cinzel', serif; font-size: 18px; color: #DCA773; font-weight: 700; }
-        .room-amount { font-size: 16px; font-weight: 800; color: #DCA773; }
-        .room-guest { font-size: 11px; color: #a8a29e; }
-        
-        .status-badge {
-            display: inline-block; padding: 4px 10px; border-radius: 9999px;
-            font-size: 10px; font-weight: 800; text-transform: uppercase;
-        }
-        .status-delivered { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .status-washing { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
-        .status-ready { background: rgba(168, 85, 247, 0.15); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
-        .status-pending { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
-        
-        .btn-staff {
-            width: 100%; padding: 14px; border-radius: 12px;
-            font-size: 14px; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 8px;
-            background: linear-gradient(135deg, #DCA773, #c89360); color: #0f0e0c;
-            border: none; cursor: pointer; transition: transform 0.1s;
-        }
-        .btn-staff:active { transform: scale(0.98); }
-        
-        .btn-secondary {
-            background: #181614; border: 1px solid #2f2820; color: #DCA773;
-        }
-
         /* Menu mobile */
         .mobile-menu {
-            position: fixed; top: 60px; right: 12px; z-index: 100;
+            position: fixed; top: 70px; right: 16px; z-index: 100;
             background: #181614; border: 1px solid #2f2820; border-radius: 16px;
             padding: 8px; display: flex; flex-direction: column; gap: 4px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 150px;
@@ -80,9 +52,19 @@
             color: #f3f4f6; text-align: left; display: flex; gap: 10px; align-items: center;
         }
         .menu-item:active { background: #2f2820; }
+        
+        /* Style des boutons principaux */
+        .btn-staff {
+            width: 100%; padding: 14px; border-radius: 12px;
+            font-size: 14px; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #DCA773, #c89360); color: #0f0e0c;
+            border: none; cursor: pointer; transition: transform 0.1s;
+        }
+        .btn-staff:active { transform: scale(0.98); }
+        .btn-secondary { background: #181614; border: 1px solid #2f2820; color: #DCA773; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen" id="bodyRoot">
 
 <!-- BARRE SUPÉRIEURE MOBILE -->
 <header class="staff-topbar">
@@ -113,7 +95,7 @@
     
     <!-- En-tête de section -->
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-lg font-bold text-white">Active Rooms & SPA</h1>
+        <h1 class="text-lg font-bold text-white" id="lblActiveRoomsHeader">Active Rooms & SPA</h1>
         <span id="activeRoomsCountBadge" class="text-xs bg-[#181614] border border-[#2f2820] text-[#DCA773] font-bold px-3 py-1 rounded-full">0</span>
     </div>
 
@@ -127,33 +109,147 @@
         </button>
     </div>
 
-    <!-- SECTION : NEW RECORD (Cachée par défaut) -->
-    <div id="sectionNewRecord" class="hidden">
-        <!-- On garde tes formulaires existants ici ou on les recharge via JS -->
-        <p class="text-sm text-stone-400 text-center py-4">Le formulaire New Record s'affiche ici</p>
-    </div>
-
-    <!-- SECTION : LIVE RECORD (Liste des chambres) -->
+    <!-- ═══ SECTION : LIVE RECORD (Liste des chambres) ═══ -->
     <div id="sectionLiveRecord" class="space-y-3">
-        <!-- Les chambres s'afficheront ici -->
-        <div id="liveOrdersList">
+        <div id="liveOrdersList" class="space-y-3">
             <p class="text-xs text-stone-500 text-center py-6">Loading active rooms...</p>
         </div>
     </div>
 
-    <!-- SECTION : SPA (Cachée par défaut) -->
-    <div id="spa-laundry-section" class="hidden">
-        <p class="text-sm text-stone-400 text-center py-4">Le formulaire SPA s'affiche ici</p>
+    <!-- ═══ SECTION : NEW RECORD ═══ -->
+    <div id="sectionNewRecord" class="hidden space-y-4 pb-10">
+        <div class="bg-[#181614] border border-[#2f2820] p-4 rounded-3xl">
+            <div class="flex justify-between items-center border-b border-[#2f2820] pb-3 mb-4">
+                <h2 class="text-lg font-serif-luxury font-bold text-[#DCA773]" id="lblFormTitle">New Record</h2>
+                <button onclick="switchMainSection('liveRecord')" class="text-stone-400 hover:text-white text-xl px-2">✕</button>
+            </div>
+
+            <input type="hidden" id="editingRecordId" value="">
+
+            <div class="space-y-4">
+                <!-- Room Number -->
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1.5">Room Number</label>
+                    <input type="number" id="roomNumber" oninput="onRoomNumberInput()" placeholder="e.g., 103, 205..." class="w-full bg-[#0f0e0c] border border-[#2f2820] rounded-xl p-3 text-sm font-bold text-white outline-none focus:border-[#DCA773]" autocomplete="off">
+                    <div id="roomAutocompleteDropdown" class="hidden absolute z-[60] bg-[#0f0e0c] border border-[#DCA773]/40 rounded-xl shadow-2xl max-h-60 overflow-y-auto w-11/12"></div>
+                    <p class="text-[10px] text-stone-500 mt-1">Valid: 103-144 · 201-246 · 301-348...</p>
+                    
+                    <div id="roomPmsInfoBox" class="hidden mt-3 p-3 bg-[#0f0e0c] rounded-xl border border-[#2f2820] text-xs space-y-1">
+                        <div class="flex justify-between"><span class="text-stone-400">Guest:</span> <span id="pmsInfoGuest" class="font-bold text-white">---</span></div>
+                        <div class="flex justify-between"><span class="text-stone-400">Room Type:</span> <span id="pmsInfoTyp" class="font-bold text-stone-300">---</span></div>
+                        <div class="flex justify-between"><span class="text-stone-400">Quota:</span> <span id="pmsInfoQuota" class="font-bold text-emerald-400">---</span></div>
+                    </div>
+                </div>
+
+                <!-- Account Type -->
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1.5">Account Type</label>
+                    <div class="grid grid-cols-3 gap-1.5 bg-[#0f0e0c] p-1.5 rounded-xl border border-[#2f2820] text-[10px] font-bold text-center text-stone-400">
+                        <button onclick="selectCountType('hotel')" id="btn-count-hotel" class="py-2.5 px-1 rounded-lg bg-[#DCA773] text-stone-950 shadow transition leading-tight">Hotel (Free)</button>
+                        <button onclick="selectCountType('quota_extra')" id="btn-count-quota-extra" class="py-2.5 px-1 rounded-lg transition leading-tight">Hotel + Extra</button>
+                        <button onclick="selectCountType('guest')" id="btn-count-guest" class="py-2.5 px-1 rounded-lg transition leading-tight">Guest (Full)</button>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div>
+                    <label class="block text-xs font-bold text-stone-400 mb-1.5">Items</label>
+                    <div id="itemsContainer" class="space-y-2 max-h-[250px] overflow-y-auto bg-[#0f0e0c] p-3 rounded-xl border border-[#2f2820]"></div>
+                </div>
+
+                <!-- Totals -->
+                <div class="bg-[#0f0e0c] border border-[#2f2820] p-3 rounded-xl text-xs space-y-1.5 font-medium text-stone-300">
+                    <div class="flex justify-between"><span>Total Pieces:</span><span id="currentBordereauCount" class="font-bold text-[#DCA773]">0 pieces</span></div>
+                    <div class="flex justify-between"><span>Grand Total:</span><span id="grandTotal" class="font-bold text-[#DCA773] text-sm">0.00 AED</span></div>
+                </div>
+
+                <!-- Save Button -->
+                <button onclick="sauvegarderBordereauDepuisFormulaire()" id="btnSaveRecord" class="w-full bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold py-3 rounded-xl text-sm shadow-lg transition uppercase tracking-wider mt-4">💾 Save Record</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ SECTION : SPA ═══ -->
+    <div id="spa-laundry-section" class="hidden pb-10">
+        <div class="bg-white text-stone-900 p-4 rounded-3xl shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-serif-luxury font-bold text-stone-900">SPA Laundry</h2>
+                <button onclick="switchMainSection('liveRecord')" class="text-stone-500 hover:text-stone-900 text-xl font-bold px-2">✕</button>
+            </div>
+            
+            <input type="hidden" id="editingSpaId" value="">
+
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase">Given By (Spa)</label>
+                        <input type="text" id="spa-given-by" class="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold focus:outline-none" placeholder="Name">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-stone-500 uppercase">Serial No</label>
+                        <input type="text" id="spa-serial-no" class="w-full bg-stone-50 border border-stone-300 rounded-lg p-2 text-xs font-semibold focus:outline-none" placeholder="e.g., #123">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-left border-collapse border border-stone-300 rounded-lg overflow-hidden">
+                        <thead>
+                            <tr class="bg-stone-100 text-stone-900 text-[10px] uppercase text-center border-b border-stone-300">
+                                <th class="p-2 text-left">Item</th>
+                                <th class="p-2">Qty</th>
+                                <th class="p-2">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs divide-y divide-stone-200 text-stone-800">
+                            <tr>
+                                <td class="p-2 font-bold">BATH TOWEL</td>
+                                <td class="p-2 text-center"><input type="number" class="spa-qty-input w-16 text-center bg-stone-50 border border-stone-300 rounded p-1 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-2 text-center font-bold spa-row-amount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold">HAND TOWEL</td>
+                                <td class="p-2 text-center"><input type="number" class="spa-qty-input w-16 text-center bg-stone-50 border border-stone-300 rounded p-1 font-bold" min="0" data-rate="1" oninput="calculateSpaTotal()"></td>
+                                <td class="p-2 text-center font-bold spa-row-amount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold">BED SHEET</td>
+                                <td class="p-2 text-center"><input type="number" class="spa-qty-input w-16 text-center bg-stone-50 border border-stone-300 rounded p-1 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-2 text-center font-bold spa-row-amount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold">PILLOW CASE</td>
+                                <td class="p-2 text-center"><input type="number" class="spa-qty-input w-16 text-center bg-stone-50 border border-stone-300 rounded p-1 font-bold" min="0" data-rate="1" oninput="calculateSpaTotal()"></td>
+                                <td class="p-2 text-center font-bold spa-row-amount">0.00</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 font-bold">BATHROBE</td>
+                                <td class="p-2 text-center"><input type="number" class="spa-qty-input w-16 text-center bg-stone-50 border border-stone-300 rounded p-1 font-bold" min="0" data-rate="2" oninput="calculateSpaTotal()"></td>
+                                <td class="p-2 text-center font-bold spa-row-amount">0.00</td>
+                            </tr>
+                            <tr class="bg-stone-100 text-stone-900">
+                                <td colspan="2" class="p-2 text-right font-bold uppercase text-[10px]">Grand Total :</td>
+                                <td id="spa-grand-total" class="p-2 text-center text-amber-700 font-black">0.00 AED</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button onclick="validateAndSaveSpaReceipt()" id="btnSaveSpa" class="w-full py-3 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider mt-4">
+                    <i class="fas fa-check-circle"></i> Validate & Save SPA
+                </button>
+            </div>
+        </div>
     </div>
 
 </main>
 
-<!-- TES SCRIPTS EXISTANTS (Pour que tout fonctionne) -->
+<!-- ═══ LIBRARIES ═══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- ═══ SCRIPTS (Les mêmes que index.html) ═══ -->
 <script src="js/config.js"></script>
 <script src="js/laundry.js"></script>
 <script src="js/realtime-listener.js"></script>
@@ -173,26 +269,41 @@
 <script>
     // 1. Gestion du menu 3 points
     function toggleStaffMenu() {
-        const menu = document.getElementById('staffMenu');
-        menu.classList.toggle('hidden');
+        document.getElementById('staffMenu').classList.toggle('hidden');
     }
 
-    // 2. Fonction de switch de section basique pour le staff
+    // 2. Redéfinition de switchMainSection pour la vue Staff
     function switchMainSection(section) {
+        console.log("Switch to:", section);
         // Cacher toutes les sections
         document.getElementById('sectionLiveRecord').classList.add('hidden');
         document.getElementById('sectionNewRecord').classList.add('hidden');
         document.getElementById('spa-laundry-section').classList.add('hidden');
 
         // Afficher la bonne section
-        if (section === 'liveRecord') document.getElementById('sectionLiveRecord').classList.remove('hidden');
-        if (section === 'newRecord') document.getElementById('sectionNewRecord').classList.remove('hidden');
-        if (section === 'spa') document.getElementById('spa-laundry-section').classList.remove('hidden');
+        if (section === 'liveRecord') {
+            document.getElementById('sectionLiveRecord').classList.remove('hidden');
+            if (typeof chargerLiveOrders === 'function') chargerLiveOrders();
+        }
+        if (section === 'newRecord') {
+            document.getElementById('sectionNewRecord').classList.remove('hidden');
+            if (typeof renderItems === 'function') renderItems();
+        }
+        if (section === 'spa') {
+            document.getElementById('spa-laundry-section').classList.remove('hidden');
+        }
+        
+        // Scroll en haut
+        window.scrollTo(0, 0);
     }
 
     // 3. Lancer l'app au chargement
     setTimeout(() => {
-        if (typeof initApp === 'function') initApp();
+        if (typeof initApp === 'function') {
+            initApp();
+            // Forcer le chargement de la vue Active Rooms au démarrage
+            switchMainSection('liveRecord');
+        }
     }, 500);
 </script>
 
