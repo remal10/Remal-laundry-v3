@@ -55,6 +55,15 @@
         /* Ajustements formulaires mobile */
         .remal-card { padding: 16px !important; }
         #itemsContainer { max-height: 250px !important; }
+        /* 🔧 CORRECTION : Empêche la topbar de déborder de l'écran */
+.mobile-topbar {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+}
+.mobile-topbar > div:last-child {
+    flex-shrink: 0 !important;
+}
     </style>
 </head>
 <body class="min-h-screen" id="bodyRoot">
