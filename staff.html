@@ -70,16 +70,14 @@
 
 <!-- ═══ TOPBAR MOBILE ═══ -->
 <header class="mobile-topbar no-print">
-    <div class="flex items-center gap-2 cursor-pointer" onclick="switchMainSection('liveRecord')">
-        <img src="assets/remal-logo.png" alt="Remal" class="h-8 w-auto object-contain">
-        <h1 class="font-serif-luxury text-sm text-[#DCA773] font-bold tracking-widest leading-none">REMAL</h1>
+    <div class="flex items-center gap-2 cursor-pointer min-w-0" onclick="switchMainSection('liveRecord')">
+        <img src="assets/remal-logo.png" alt="Remal" class="h-8 w-auto object-contain flex-shrink-0">
+        <h1 class="font-serif-luxury text-sm text-[#DCA773] font-bold tracking-widest leading-none truncate">REMAL</h1>
     </div>
 
-    <div class="flex items-center gap-2">
-        <!-- On injecte le bouton admin ici si besoin plus tard -->
+    <div class="flex items-center gap-2 flex-shrink-0">
         <div id="headerAdminContainer"></div>
         
-        <!-- Bouton 3 points -->
         <div class="relative">
             <button onclick="document.getElementById('mobileMenuOptions').classList.toggle('hidden')" class="header-action-btn" title="Options">
                 <i class="fas fa-ellipsis-vertical"></i>
