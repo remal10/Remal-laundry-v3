@@ -168,7 +168,12 @@
     </style>
 </head>
 <body class="min-h-screen bg-[#12100e] text-stone-200" id="bodyRoot">
-
+<script>
+    // Redirection automatique pour les téléphones vers staff.html
+    if (window.innerWidth < 1025 && !window.location.pathname.includes('staff.html')) {
+        window.location.href = 'staff.html';
+    }
+</script>
 <!-- ═══ PWA BANNER ═══ -->
 <div id="pwaInstallBanner" class="hidden fixed bottom-4 left-4 right-4 z-[9999] bg-gradient-to-r from-[#DCA773] to-[#F8E9C0] text-stone-950 rounded-2xl shadow-2xl p-4 flex items-center gap-3 no-print">
     <div class="text-2xl">📱</div>
