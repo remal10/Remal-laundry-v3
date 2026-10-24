@@ -230,6 +230,14 @@
     <!-- SECTION SPA -->
     <section id="spa-laundry-section" class="hidden p-4 rounded-3xl space-y-6 relative mx-auto bg-white text-stone-900 shadow-2xl border border-stone-200">
         <input type="hidden" id="editingSpaId" value="">
+        
+        <!-- ✅ CHAMPS MANQUANTS POUR QUE LA SPA FONCTIONNE -->
+        <input type="date" id="spa-collection-date" class="hidden">
+        <input type="time" id="spa-collection-time" class="hidden">
+        <input type="date" id="spa-delivery-date" class="hidden">
+        <input type="time" id="spa-delivery-time" class="hidden">
+        <span id="spa-current-date" class="hidden"></span>
+
         <div class="flex justify-between items-center border-b border-stone-300 pb-2">
             <h2 class="text-lg font-serif-luxury font-bold text-stone-900">S P A</h2>
             <button onclick="switchMainSection('liveRecord')" class="text-stone-500 text-xl font-bold">✕</button>
@@ -260,14 +268,14 @@
         </div>
 
         <div class="grid grid-cols-1 gap-3 pt-2 no-print">
-            <button onclick="validateAndSaveSpaReceipt()" id="btnSaveSpa" class="w-full py-3.5 bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold rounded-xl shadow transition text-xs uppercase"><i class="fas fa-check-circle"></i> Validate & Save</button>
+            <button onclick="validateAndSaveSpaReceipt()" id="btnSaveSpa" class="w-full py-3.5 bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold rounded-xl shadow transition text-xs uppercase"><i class="fas fa-check-circle"></i> Validate & Save SPA</button>
         </div>
     </section>
 
 </main>
 
 <!-- ═══════════════════════════════════════════════════════════════════
-     MODALES (Les vraies, copiées de ton index.html)
+     MODALES 
      ═══════════════════════════════════════════════════════════════════ -->
 
 <!-- MODAL — ACTIVE ROOMS LIST -->
@@ -375,10 +383,16 @@
             <div class="receipt-footer text-center text-[10px] text-stone-500 mt-2">THANK YOU FOR YOUR STAY</div>
         </div>
 
+        <!-- ✅ BOUTONS EDIT, DUPLICATE, DELETE AJOUTÉS ICI -->
         <div class="space-y-3 pt-2 no-print">
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="genererPDF(selectedIdForModal)" class="bg-[#DCA773] hover:bg-[#c89360] text-stone-950 font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-2">📥 Download PDF</button>
                 <a id="btnWhatsappShare" href="#" target="_blank" class="bg-stone-800 hover:bg-stone-700 text-stone-100 font-bold py-3 rounded-xl text-xs shadow flex items-center justify-center gap-2">💬 Share</a>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="modifierBordereauActuel()" class="bg-amber-700 hover:bg-amber-600 text-stone-950 font-bold py-3 rounded-xl text-[10px] shadow flex items-center justify-center gap-1">✏️ Edit</button>
+                <button onclick="dupliquerRecordActuel()" class="bg-[#DCA773]/20 hover:bg-[#DCA773]/30 text-[#DCA773] border border-[#DCA773]/40 font-bold py-3 rounded-xl text-[10px] shadow flex items-center justify-center gap-1">📋 Duplicate</button>
+                <button onclick="supprimerBordereauActuel()" class="bg-rose-950 hover:bg-rose-900 text-rose-200 border border-rose-800 font-bold py-3 rounded-xl text-[10px] shadow flex items-center justify-center gap-1">🗑️ Delete</button>
             </div>
         </div>
     </div>
